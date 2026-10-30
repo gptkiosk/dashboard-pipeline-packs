@@ -84,6 +84,43 @@ def platform_problems(manifest: dict, files: dict[str, bytes], platform: dict) -
     return problems
 
 
+def example_problems(manifest: dict, files: dict[str, bytes], examples: Path) -> list[str]:
+    """Every template needs at least one example (examples/<pack id>/*.json), used by the rehearsal gate. Examples are not shipped."""
+    problems, covered = [], set()
+    for path in sorted((examples / str(manifest.get("id"))).glob("*.json")):
+        rel = f"examples/{manifest.get('id')}/{path.name}"
+        try:
+            ex = json.loads(path.read_text("utf-8"))
+        except (OSError, ValueError, UnicodeError):
+            problems.append(f"{rel} is not valid JSON")
+            continue
+        type_id = ex.get("type") if isinstance(ex, dict) else None
+        if type_id not in (manifest.get("project_types") or []):
+            problems.append(f"{rel}: type must be one of the pack's templates")
+            continue
+        covered.add(type_id)
+        t = json.loads(files.get(f"project-types/{type_id}.json", b"{}"))
+        known = {f["id"] for f in t.get("customize", [])} | {q["id"] for q in t.get("intake_questions", [])} | {"audience", "boundaries"}
+        answers = ex.get("answers") or {}
+        if not isinstance(answers, dict) or set(answers) - known or not all(isinstance(v, str) for v in answers.values()):
+            problems.append(f"{rel}: answers must be text keyed by the template's setting ids")
+        if not str(ex.get("title", "")).strip() or not str(ex.get("brief", "")).strip():
+            problems.append(f"{rel}: needs a title and a brief")
+        expect = ex.get("expect") or {}
+        if not isinstance(expect, dict) or set(expect) - {"stories_min", "stories_max", "titles"} or \
+                not all(isinstance(expect.get(k, 1), int) for k in ("stories_min", "stories_max")) or not isinstance(expect.get("titles", []), list):
+            problems.append(f"{rel}: expect holds stories_min, stories_max and titles (patterns)")
+        else:
+            for pattern in expect.get("titles", []):
+                try:
+                    re.compile(pattern)
+                except (re.error, TypeError):
+                    problems.append(f"{rel}: {pattern!r} is not a valid pattern")
+    for type_id in sorted(set(manifest.get("project_types") or []) - covered):
+        problems.append(f"template {type_id} has no example in examples/{manifest.get('id')}/; the rehearsal gate needs one")
+    return problems
+
+
 def settings_labels(manifest: dict, files: dict[str, bytes]) -> list[str]:
     labels = []
     for t in manifest.get("project_types") or []:
@@ -183,6 +220,7 @@ def main() -> int:
     parser.add_argument("--packs", type=Path, default=ROOT / "packs")
     parser.add_argument("--out", type=Path, default=ROOT / "dist")
     parser.add_argument("--dashboard", type=Path, help="a dashboard checkout whose pipeline_packs.validate() every pack must also pass")
+    parser.add_argument("--examples", type=Path, default=ROOT / "examples")
     parser.add_argument("--check-only", action="store_true", help="validate, write nothing")
     args = parser.parse_args()
 
@@ -194,7 +232,7 @@ def main() -> int:
         manifest, more = check(folder, files)
         problems += more
         if manifest:
-            problems += platform_problems(manifest, files, platform)
+            problems += platform_problems(manifest, files, platform) + example_problems(manifest, files, args.examples)
         if not problems and args.dashboard:
             problems += dashboard_check(args.dashboard, files)
         if problems:

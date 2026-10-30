@@ -22,11 +22,16 @@ def write_pack(base: Path, type_changes=None, **changes) -> Path:
     (folder / "pack.json").write_text(json.dumps(manifest), "utf-8")
     (folder / "project-types" / "sample-course.json").write_text(json.dumps({**TYPE, **(type_changes or {})}), "utf-8")
     (folder / "guides" / "sample-format.md").write_text("# Format\n", "utf-8")
+    examples = base.parent / "examples" / "sample-course"
+    examples.mkdir(parents=True, exist_ok=True)
+    (examples / "one.json").write_text(json.dumps({"type": "sample-course", "title": "One", "brief": "A sample.", "answers": {},
+                                                   "expect": {"stories_min": 1, "titles": ["verif"]}}), "utf-8")
     return folder
 
 
 def build(packs: Path, out: Path) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, "-I", str(BUILD), "--packs", str(packs), "--out", str(out)], capture_output=True, text=True)
+    return subprocess.run([sys.executable, "-I", str(BUILD), "--packs", str(packs), "--examples", str(packs.parent / "examples"), "--out", str(out)],
+                          capture_output=True, text=True)
 
 
 class BuildTest(unittest.TestCase):
@@ -81,6 +86,24 @@ class BuildTest(unittest.TestCase):
             self.assertEqual(build(base / "packs", base / "out").returncode, 0)
             entry = json.loads((base / "out" / "pipeline-packs.json").read_text("utf-8"))["packs"][0]
             self.assertEqual((entry["trust"], entry["settings"]), ("community", ["Lessons"]))
+
+    def test_every_template_needs_a_well_formed_example(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            write_pack(base / "packs")
+            (base / "examples" / "sample-course" / "one.json").write_text(json.dumps(
+                {"type": "other-type", "title": "x", "brief": "y"}), "utf-8")
+            (base / "examples" / "sample-course" / "two.json").write_text(json.dumps(
+                {"type": "sample-course", "title": "x", "brief": "y", "answers": {"invented": "x"}, "expect": {"titles": ["("]}}), "utf-8")
+            result = build(base / "packs", base / "out")
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("one.json: type must be one of the pack's templates", result.stderr)
+            self.assertIn("two.json: answers must be text keyed by the template's setting ids", result.stderr)
+            self.assertIn("'(' is not a valid pattern", result.stderr)
+            for path in (base / "examples" / "sample-course").glob("*.json"):
+                path.unlink()
+            result = build(base / "packs", base / "out")
+            self.assertIn("template sample-course has no example", result.stderr)
 
     def test_no_packs_is_not_a_failure(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -70,10 +70,14 @@ def scan_pack(folder: Path, rules, platform_hosts: set[str]) -> list[str]:
     except (OSError, ValueError, UnicodeError):
         return [f"{folder.name}/pack.json: not readable JSON"]
     hosts = set(platform_hosts) | {h.lower() for h in ((manifest.get("service") or {}).get("hosts") or []) if isinstance(h, str)}
+    return scan_pack_files(folder, folder.name, rules, hosts)
+
+
+def scan_pack_files(folder: Path, label: str, rules, hosts: set[str]) -> list[str]:
     encoded = next(p for r, p in rules if r == "encoded")
     findings = []
     for path in sorted(p for p in folder.rglob("*") if p.is_file()):
-        rel = f"{folder.name}/{path.relative_to(folder).as_posix()}"
+        rel = f"{label}/{path.relative_to(folder).as_posix()}"
         raw = path.read_text("utf-8", errors="replace")
         if path.suffix == ".json":
             try:
@@ -132,6 +136,9 @@ def main(argv=None) -> int:
     failed = False
     for folder in sorted(p for p in args.packs.iterdir() if p.is_dir() and not p.name.startswith(".")):
         findings = scan_pack(folder, rules, platform_hosts)
+        examples = ROOT / "examples" / folder.name           # examples reach a model during rehearsal, so they are scanned too
+        if examples.is_dir():
+            findings += [f.replace(f"{folder.name}/", f"examples/{folder.name}/", 1) for f in scan_pack_files(examples, folder.name, rules, platform_hosts)]
         if args.base_ref:
             for path in sorted((folder / "project-types").glob("*.json")):
                 rel = path.relative_to(ROOT).as_posix()

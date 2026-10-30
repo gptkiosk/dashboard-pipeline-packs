@@ -1,0 +1,19 @@
+{
+  "type": "local-website",
+  "title": "Corner bakery",
+  "brief": "A four-page illustrated website for a neighbourhood bakery, reviewed in a local preview.",
+  "answers": {
+    "pages": "Home, Menu, Story, Visit (hours and map link); light and dark themes.",
+    "visual_style": "Warm, hand-drawn, cream and cinnamon colours; avoid stock-photo look.",
+    "media_source": "generate in Media studio",
+    "media": "Six illustrations: hero, three menu items, the shop front, a baker; no video."
+  },
+  "expect": {
+    "stories_min": 5,
+    "stories_max": 30,
+    "titles": [
+      "preview|review",
+      "media|illustration"
+    ]
+  }
+}

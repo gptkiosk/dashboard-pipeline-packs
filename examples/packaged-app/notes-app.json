@@ -1,0 +1,18 @@
+{
+  "type": "packaged-app",
+  "title": "Pocket notes",
+  "brief": "A small desktop notes app with tags and full-text search, installed from a public GitHub release.",
+  "answers": {
+    "features": "Write, tag and search notes; export a note as Markdown.",
+    "target": "macOS and Linux, from a GitHub release with an install script and a README.",
+    "data": "Notes stay in a local SQLite file; no accounts and no network."
+  },
+  "expect": {
+    "stories_min": 4,
+    "stories_max": 25,
+    "titles": [
+      "release|publish",
+      "readme|docs"
+    ]
+  }
+}

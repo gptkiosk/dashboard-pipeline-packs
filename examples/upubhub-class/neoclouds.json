@@ -1,0 +1,21 @@
+{
+  "type": "upubhub-class",
+  "title": "What are neoclouds?",
+  "brief": "A one-lesson micro class explaining neoclouds: GPU cloud providers that grew with AI.",
+  "answers": {
+    "subject_code": "NEWS",
+    "level": "10",
+    "class_name": "What Are Neoclouds",
+    "subject_scope": "What a neocloud is, how it differs from the big clouds, why AI training created them. No investment advice.",
+    "lessons": "1",
+    "sources": "original writing"
+  },
+  "expect": {
+    "stories_min": 8,
+    "stories_max": 20,
+    "titles": [
+      "verify course package files",
+      "fact.?check|accuracy"
+    ]
+  }
+}

@@ -12,6 +12,8 @@ predictable run that cannot be steered into doing something else. These rules ar
 - **Settings, not loopholes.** Put what users may change in `customize`: numbers with a range, choices from a list, yes or no.
   Use a text setting only for facts such as a subject or audience; text settings never appear inside the plan text.
 - **Short guides.** Each guide is cut at about 1,600 characters in the planner's prompt; stories can read the full file.
+- **Examples.** Add at least one `examples/<pack id>/<name>.json`: a title, a brief, setting answers, and what a good plan
+  must contain (`expect`: `stories_min`, `stories_max`, `titles` patterns). Examples are not shipped; rehearsal uses them.
 - **Honest requirements.** List every agent, system tool, provider, check and service the template needs in `requires`, using
   only names from `platform/tools.json`.
 
@@ -35,8 +37,8 @@ say so. Your template's pull request waits for that one.
 ## How a pull request is reviewed
 
 1. **Format, scan and catalog** run automatically on every pull request. Fix anything they report.
-2. **Model review and rehearsal** run when a maintainer adds a label (being built; until then a maintainer reviews and test-plans
-   by hand).
+2. **Model review and rehearsal** run when a maintainer adds a label. Rehearsal plans your template's examples several times
+   with the dashboard's real planner and fails if any plan breaks the template's own checks or your example's expectations.
 3. A maintainer reviews every change. Merging does not publish: only a signed release, published by a maintainer, reaches
    dashboards. Accepted templates are listed as **Community** with your account name.
 
