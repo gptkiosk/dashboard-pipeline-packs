@@ -1,0 +1,56 @@
+{
+  "id": "upubhub-class",
+  "label": "upubhub class (textbook, lesson plans, assessments)",
+  "summary": "A short course a teacher uploads to upubhub.com and teaches from: an original textbook with discussion topics, one lesson plan per lesson, class assessment settings and an upload checklist. Uploading and class setup stay with the teacher.",
+  "suggest": [
+    "upubhub",
+    "class|course|curriculum|syllabus",
+    "textbook",
+    "lesson plans?",
+    "assessments?|quiz|test questions",
+    "teach(ing)? (a|the) subject"
+  ],
+  "keys": ["agent", "fal", "openrouter"],
+  "guides": ["upubhub-class-format.md", "course-design.md"],
+  "planner_text": "Plan a course package in the project folder, not software. Follow upubhub-class-format.md exactly; the dashboard's course-package check enforces it.\nStories, in order: (1) human sign-off on the course brief: subject, scope, audience, reading level, lesson count and measurable objectives per lesson. (2) human sign-off on the source plan: original writing, or named open-licence sources (CC BY 4.0, CC BY-SA 4.0, CC0 or public domain) with author and https link. Never invent a licence or a credit; only the teacher can attest to reuse rights. (3) agent outline: write course/course.json with lessons, section headings and objectives. (4) agent textbook stories, one per lesson and parallel, each writing course/textbook/<lesson>.md with one \"## \" heading per section exactly as in course.json. (5) agent discussion topics: course/topics.json, at most 12 per lesson, anchors copied from the lesson text. (6) illustrations only when requested, using the media stages (inventory, generate in Media studio after spend approval, publish, integrate); images live in assets/img and are referenced from the lesson Markdown with alt text. (7) a read-only fact-check story on a different model from the writer; its findings become fix stories. (8) agent lesson plans, one per lesson, parallel. (9) agent assessment settings, one per lesson. (10) agent static verification titled \"Verify course package files\" with verification_stage \"static\": re-read every file against the format guide and fix mismatches; the dashboard runs the course-package check when the operator accepts this story and lists every problem. (11) agent UPLOAD.md: the step-by-step upload and class-setup checklist. (12) human, in upubhub: review the drafts, publish lessons, create the class, share the textbook, assign lessons and set up assessment. No containers, deployment, CI, pull requests or application code. No model chooses classroom ids or uploads anything.",
+  "failure_points": [
+    "A lesson heading that differs from course.json by one character breaks the package; copy the headings, do not retype them.",
+    "A topic anchor must occur exactly once in its section, on a plain prose line; upubhub rejects anchors inside links, images, code or markup.",
+    "upubhub assesses at most 12 topics and 60,000 characters per assigned lesson set; split long lessons instead of trimming quality.",
+    "Generated text is declared ai_generated or ai_assisted, never human-written.",
+    "A borrowed passage or image without a credit, an allowed licence and an https source cannot be uploaded; prefer original writing.",
+    "The writer checking its own facts misses its own errors; the fact-check story uses a different model and reads the lesson text, not the outline."
+  ],
+  "visual_checks": "The teacher reads every lesson and lesson plan before upload; illustrations are approved in Media studio before they are integrated.",
+  "human_signoffs": [
+    "Approve the course brief and objectives",
+    "Approve the source and licence plan",
+    "Approve media spending and select/publish illustrations in the project Media tab, when illustrations are requested",
+    "Upload, publish and set up the class in upubhub"
+  ],
+  "checks": [
+    {"id": "brief-signoff", "severity": "warn", "kind": "has_story", "match": "brief|objectives", "assignee": "human",
+     "message": "Start with a human sign-off on the course brief and measurable objectives."},
+    {"id": "source-plan", "severity": "block", "kind": "has_story", "match": "source|licen[cs]e", "assignee": "human",
+     "message": "Add a human sign-off on the source and licence plan; only the teacher can attest to reuse rights."},
+    {"id": "verification-story", "severity": "block", "kind": "has_story", "match": "verif.{0,30}(course|package|files)",
+     "message": "Add the static verification story \"Verify course package files\"; the dashboard runs the course-package check when it is accepted."},
+    {"id": "fact-check", "severity": "warn", "kind": "has_story", "match": "fact.?check|accuracy|citations?",
+     "message": "Add a read-only fact-check story on a different model from the writer."},
+    {"id": "outline-first", "severity": "warn", "kind": "order", "first": "outline|course\\.json", "then": "textbook|lesson [0-9]|lesson plans?|topics",
+     "message": "Lessons, topics and plans are planned before the outline that fixes their headings."},
+    {"id": "upload-is-human", "severity": "block", "kind": "not_agent_for", "match": "\\b(upload|publish|create the class|assign)\\b.{0,40}\\bupubhub\\b",
+     "message": "Uploading, publishing and class setup in upubhub are the teacher's steps."},
+    {"id": "no-software-extras", "severity": "warn", "kind": "not_agent_for", "match": "docker|container|deploy|pull request|ci pipeline",
+     "message": "A course package needs no containers, deployment, CI or pull requests."}
+  ],
+  "media_default_tiers": {"image": "draft"},
+  "intake_questions": [
+    {"id": "subject_scope", "label": "Subject and scope", "prompt": "What subject does the course teach, and what is in and out of scope?", "required": true},
+    {"id": "reading_level", "label": "Reading level", "prompt": "What grade or reading level, and any vocabulary to avoid or require?", "required": true},
+    {"id": "lessons", "label": "Lessons", "prompt": "How many lessons, and roughly how long should each be? upubhub assesses at most 12 topics and 60,000 characters per lesson.", "required": true},
+    {"id": "sources", "label": "Sources", "prompt": "Original writing, or named open-licence sources (CC BY 4.0, CC BY-SA 4.0, CC0, public domain) with links?", "required": true},
+    {"id": "illustrations", "label": "Illustrations", "prompt": "Should lessons be illustrated? If so, describe the style and roughly how many images.", "required": false},
+    {"id": "assessment_style", "label": "Assessment", "prompt": "How should students be assessed: attempts (1 to 3), strictness, and which of accuracy, reasoning and application matters most?", "required": false}
+  ]
+}
