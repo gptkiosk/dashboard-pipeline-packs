@@ -1,0 +1,58 @@
+name: Release packs
+
+# Push a tag such as v2026.11.01 to build every pack, sign the index with the dashboard release key and open a DRAFT release.
+# Publishing the draft (after checking it) is the approval: dashboards only read the latest published release.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Fetch the dashboard whose validator packs must pass
+        if: vars.DASHBOARD_REPOSITORY != ''
+        run: git clone --depth 1 "https://github.com/${{ vars.DASHBOARD_REPOSITORY }}.git" "$RUNNER_TEMP/dashboard"
+      - name: Validate and build
+        run: |
+          set -euo pipefail
+          if [ -d "$RUNNER_TEMP/dashboard" ]; then
+            python3 -I tools/build.py --dashboard "$RUNNER_TEMP/dashboard"
+          else
+            python3 -I tools/build.py
+          fi
+          test -f dist/pipeline-packs.json || { echo "No packs to release." >&2; exit 1; }
+      - name: Sign the index
+        env:
+          RELEASE_SSH_PRIVATE_KEY: ${{ secrets.RELEASE_SSH_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "${RELEASE_SSH_PRIVATE_KEY:-}" || { echo "Add the RELEASE_SSH_PRIVATE_KEY secret (the dashboard-release key) to this repository." >&2; exit 1; }
+          key="$RUNNER_TEMP/release-signing-key"
+          umask 077
+          printf '%s\n' "$RELEASE_SSH_PRIVATE_KEY" > "$key"
+          trap 'rm -f "$key"' EXIT
+          ssh-keygen -y -f "$key" >/dev/null
+          ssh-keygen -Y sign -f "$key" -n dashboard-release dist/pipeline-packs.json
+          ssh-keygen -Y verify -f allowed_signers -I dashboard-release -n dashboard-release -s dist/pipeline-packs.json.sig < dist/pipeline-packs.json
+          (cd dist && sha256sum pipeline-packs.json.sig >> SHA256SUMS)
+      - name: Open a draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          {
+            echo "Pipeline packs in this release:"
+            echo
+            python3 -I -c 'import json; [print(f"- {p[\"label\"]} ({p[\"id\"]} {p[\"pack_version\"]}, needs dashboard {p[\"app_min\"]})") for p in json.load(open("dist/pipeline-packs.json"))["packs"]]'
+          } > "$RUNNER_TEMP/notes.md"
+          gh release create "$GITHUB_REF_NAME" dist/* --draft --verify-tag --title "Pipeline packs $GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/notes.md"
