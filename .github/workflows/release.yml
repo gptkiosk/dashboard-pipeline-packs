@@ -25,12 +25,17 @@ jobs:
           python3 -I tools/readme.py --check
       - name: Fetch the dashboard whose validator packs must pass
         if: vars.DASHBOARD_REPOSITORY != ''
-        run: git clone --depth 1 "https://github.com/${{ vars.DASHBOARD_REPOSITORY }}.git" "$RUNNER_TEMP/dashboard"
+        run: |
+          set -euo pipefail
+          git clone --depth 1 "https://github.com/${{ vars.DASHBOARD_REPOSITORY }}.git" "$RUNNER_TEMP/dashboard"
+          # The dashboard's validator imports its API modules, so it runs with the dashboard's own locked requirements.
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet -r "$RUNNER_TEMP/dashboard/apps/api/requirements.lock.txt"
       - name: Validate and build
         run: |
           set -euo pipefail
           if [ -d "$RUNNER_TEMP/dashboard" ]; then
-            python3 -I tools/build.py --dashboard "$RUNNER_TEMP/dashboard"
+            "$RUNNER_TEMP/venv/bin/python" -I tools/build.py --dashboard "$RUNNER_TEMP/dashboard"
           else
             python3 -I tools/build.py
           fi
