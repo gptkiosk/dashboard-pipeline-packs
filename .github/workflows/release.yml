@@ -53,6 +53,6 @@ jobs:
           {
             echo "Pipeline packs in this release:"
             echo
-            python3 -I -c 'import json; [print(f"- {p[\"label\"]} ({p[\"id\"]} {p[\"pack_version\"]}, needs dashboard {p[\"app_min\"]})") for p in json.load(open("dist/pipeline-packs.json"))["packs"]]'
+            python3 -I tools/release_notes.py dist/pipeline-packs.json
           } > "$RUNNER_TEMP/notes.md"
           gh release create "$GITHUB_REF_NAME" dist/* --draft --verify-tag --title "Pipeline packs $GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/notes.md"
