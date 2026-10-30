@@ -41,7 +41,9 @@ def catalog(packs: Path, platform: dict) -> str:
                 out += ["Settings you choose: " + ", ".join(settings) + ".", ""]
             needs = build.requirements(manifest, files)
             if needs:
-                out += ["Needs: " + "; ".join(f"{KIND_TITLES[k].lower()} {', '.join(v)}" for k, v in needs.items()) + ".", ""]
+                # A template's agents are alternatives: any one installed is enough.
+                out += ["Needs: " + "; ".join(f"one of the agents {', '.join(v)}" if k == "agents" else f"{KIND_TITLES[k].lower()} {', '.join(v)}"
+                                              for k, v in needs.items()) + ".", ""]
     out += ["## Approved tools", "", "A template may require only these. Asking for a new one is its own pull request to `platform/tools.json`.", ""]
     for kind, title in KIND_TITLES.items():
         out += [f"### {title}", "", "| Name | Id | Since | What it does |", "|---|---|---|---|"]

@@ -31,7 +31,8 @@ class ScanRules(unittest.TestCase):
 
     def test_ordinary_course_text_passes(self):
         for text in ["Upload, publish and set up the class in upubhub.", "Approve the source and licence plan.",
-                     "Write course/textbook/<id>.md with one heading per section.", "Review the drafts before uploading."]:
+                     "Write course/textbook/<id>.md with one heading per section.", "Review the drafts before uploading.",
+                     "Leave unknowns for readiness checks; never paste credentials.", "Do not share passwords or API keys."]:
             with self.subTest(text):
                 self.assertEqual(scan.scan_text(text, RULES, {"upubhub.com"}), [])
 

@@ -1,0 +1,17 @@
+{
+  "format": "dashboard-pipeline-pack",
+  "version": "0.1",
+  "id": "other",
+  "pack_version": "1.0.0",
+  "label": "Other (does not exactly fit)",
+  "author": "gptkiosk",
+  "summary": "A project that does not exactly fit a listed type. It is planned from the brief and the general practices, and the plan says which listed type it resembles and which of that type's gates still apply.",
+  "service": null,
+  "app_min": "0.6.88",
+  "project_types": [
+    "other"
+  ],
+  "guides": [],
+  "checks": [],
+  "connectors": []
+}

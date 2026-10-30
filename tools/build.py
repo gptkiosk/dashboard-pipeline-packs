@@ -154,7 +154,14 @@ def dashboard_check(checkout: Path, files: dict[str, bytes]) -> list[str]:
     sys.path.insert(0, str(checkout / "apps" / "api"))
     import pipeline_packs  # noqa: PLC0415 - the checkout is only known at run time
     from version import __version__  # noqa: PLC0415
-    return pipeline_packs.validate(files, __version__)[1]
+    problems = pipeline_packs.validate(files, __version__)[1]
+    # A store template that shares an id with one the dashboard bundles must be the same file, so the offline copy and the
+    # store never plan differently.
+    for rel, data in files.items():
+        bundled = checkout / "packs" / rel
+        if rel.startswith("project-types/") and bundled.is_file() and bundled.read_bytes() != data:
+            problems.append(f"{rel} differs from the copy the dashboard bundles ({bundled.relative_to(checkout)}); keep them identical")
+    return problems
 
 
 def archive(pack_id: str, files: dict[str, bytes]) -> bytes:

@@ -1,0 +1,17 @@
+{
+  "format": "dashboard-pipeline-pack",
+  "version": "0.1",
+  "id": "local-website",
+  "pack_version": "1.0.0",
+  "label": "Local website (illustrated site reviewed on this host)",
+  "author": "gptkiosk",
+  "summary": "An original, illustrated static website with themed pages, generated media, and dashboard-managed local preview review. It is not cloud hosted by this project.",
+  "service": null,
+  "app_min": "0.6.88",
+  "project_types": [
+    "local-website"
+  ],
+  "guides": [],
+  "checks": [],
+  "connectors": []
+}

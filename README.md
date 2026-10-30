@@ -79,6 +79,56 @@ python3 tools/readme.py --check
 
 ## Approved templates
 
+### GCP hosted app (containerized application on Google Cloud)
+
+`gcp-hosted-app` in pack `gcp-hosted-app` 1.0.0 · Official, by gptkiosk · dashboard 0.6.88 or newer
+
+A containerized application deployed to an explicitly named Google Cloud target such as Cloud Run, with runtime verification and delivery evidence.
+
+Settings you choose: Main workflows, Platform and delivery, Data and integrations, Google Cloud hosting.
+
+Needs: one of the agents claude, codex, grok, openclaw.
+
+### GCP hosted website (illustrated site deployed to Google Cloud)
+
+`gcp-hosted-website` in pack `gcp-hosted-website` 1.0.0 · Official, by gptkiosk · dashboard 0.6.88 or newer
+
+An original illustrated website with themed pages and generated media, delivered through an explicitly planned Google Cloud deployment and dashboard-managed preview review.
+
+Settings you choose: Pages and interactions, Look and references, Media source, Artwork and media details, Google Cloud hosting.
+
+Needs: one of the agents claude, codex, grok, openclaw; system tools node.
+
+### Local website (illustrated site reviewed on this host)
+
+`local-website` in pack `local-website` 1.0.0 · Official, by gptkiosk · dashboard 0.6.88 or newer
+
+An original, illustrated static website with themed pages, generated media, and dashboard-managed local preview review. It is not cloud hosted by this project.
+
+Settings you choose: Pages and interactions, Look and references, Media source, Artwork and media details.
+
+Needs: one of the agents claude, codex, grok, openclaw; system tools docker, node.
+
+### Other (does not exactly fit)
+
+`other` in pack `other` 1.0.0 · Official, by gptkiosk · dashboard 0.6.88 or newer
+
+A project that does not exactly fit a listed type. It is planned from the brief and the general practices, and the plan says which listed type it resembles and which of that type's gates still apply.
+
+Settings you choose: Finished result, What is different?.
+
+Needs: one of the agents claude, codex, grok, openclaw.
+
+### Packaged app (local install from a public GitHub release)
+
+`packaged-app` in pack `packaged-app` 1.0.0 · Official, by gptkiosk · dashboard 0.6.88 or newer
+
+An application people install on their own machine from a signed package published as a GitHub release. Not cloud deployed. Examples: the Mac and Raspberry Pi control dashboards.
+
+Settings you choose: Main workflows, Platform and delivery, Data and integrations.
+
+Needs: one of the agents claude, codex, grok, openclaw.
+
 ### upubhub class (textbook, lesson plans, assessments)
 
 `upubhub-class` in pack `upubhub-class` 0.2.0 · Official, by gptkiosk · dashboard 0.6.88 or newer
