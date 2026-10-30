@@ -4,11 +4,12 @@
   "id": "upubhub-class",
   "pack_version": "0.2.0",
   "label": "upubhub class (textbook, lesson plans, assessments)",
+  "author": "gptkiosk",
   "summary": "Plans and writes a short course for upubhub.com: an original textbook with discussion topics, lesson plans and class assessment settings, checked against upubhub's limits and ready to upload by hand.",
   "service": {"id": "upubhub", "label": "upubhub.com", "credential": null, "hosts": ["upubhub.com"]},
   "app_min": "0.6.88",
   "project_types": ["upubhub-class"],
-  "guides": ["upubhub-class-format.md", "course-design.md"],
+  "guides": ["upubhub-class-format.md", "course-design.md", "class-codes.md"],
   "general_guides": ["readme-and-docs.md"],
   "checks": ["course-package"],
   "connectors": []

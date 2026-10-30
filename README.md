@@ -1,4 +1,4 @@
-# Dashboard pipeline packs
+# Dashboard template store
 
 ## Functionality at a glance
 
@@ -8,36 +8,132 @@ A data-only catalog of optional planner/project packs for the [Mac Control Dashb
 - Dashboards install release archives after verifying the signed index, archive digests, and supported format.
 - The upubhub class pack guides creation of compatible course deliverables. Installing it does not establish a shared login or automatically publish content to upubhub; export/import and any service credentials remain explicit operator steps.
 
-Optional add-ons for the Mac and Raspberry Pi control dashboards (MCD and RCD). A pack teaches the dashboard's planner one kind of deliverable for one service, for example a upubhub.com class: its project type, the settings a user may choose, sign-offs and short format guides.
+Templates for the Mac and Raspberry Pi control dashboards (MCD and RCD). A template turns a short brief into a predictable,
+repeatable project run for one kind of deliverable, for example a upubhub.com class: the stories to plan, the checks a plan
+must pass, where a person signs off, and short format guides.
 
-You add a pack inside the dashboard, in **Settings → Installs & updates → Pipeline packs**. Nothing here needs to be downloaded by hand.
+Each template has a fixed part and a few **settings**. The fixed part is what makes runs repeatable and is the same for
+everyone. The settings (numbers, choices, yes or no, and a little short text) are what you personalize, and they cannot
+change the fixed part.
+
+You add templates inside the dashboard, in **Settings → Installs & updates**. Nothing here needs to be downloaded by hand.
+Templates are published in packs; this repository keeps its original name so existing dashboards keep finding it.
 
 ## What a pack is
 
-A pack is data only: JSON and Markdown. It never contains code that runs on your computer. Checks and service connectors are part of the dashboard itself; a pack names the ones it uses, and a dashboard that does not have them refuses the pack and asks you to update.
+A pack is data only: JSON and Markdown. It never contains code that runs on your computer. Checks and service connectors are
+part of the dashboard itself; a pack names the ones it uses, and a dashboard that does not have them refuses the pack and asks
+you to update.
 
 ```
 packs/<id>/
-  pack.json                   id, pack_version, label, summary, service, app_min, project_types, guides, general_guides, checks, connectors
-  project-types/<type>.json   the same schema as the dashboard's built-in project types
+  pack.json                   id, pack_version, label, author, summary, service, app_min, project_types, guides, general_guides, checks, connectors
+  project-types/<type>.json   the template: plan text, checks, sign-offs, settings (customize) and requires
   guides/<name>.md            short format guides the planner and stories read
 ```
 
-The full format is described in the dashboard's `docs/configuration/pipeline-packs.md`.
+The template format is described in the dashboard's `docs/configuration/project-types.md`; packs in
+`docs/configuration/pipeline-packs.md`. To offer a template, read [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## How templates are checked
+
+Every pull request runs these checks before a maintainer reviews it (3 and 4 are being built; until they run, a maintainer does both by hand):
+
+1. **Format**: every pack and template must load in the dashboard's own validator, stay within size limits, and list only
+   approved tools (below) that are old enough for its `app_min`.
+2. **Injection scan** (`tools/scan.py`, rules in `security/`): all template text reaches a model, so all of it is scanned for
+   hidden characters, encoded payloads, instructions aimed at the model, secret handling, network and host commands, links to
+   unlisted hosts, and changes that weaken a template's checks or sign-offs.
+3. **Model review** (advisory, on a maintainer's label): a reviewer model reads the change for hidden intent and scope creep.
+4. **Rehearsal** (on a maintainer's label): the dashboard plans the template's examples several times and checks that every
+   plan passes the template's own checks.
+
+A merge alone ships nothing. Only a signed release reaches a dashboard.
 
 ## How packs are released and trusted
 
-1. Change a pack under `packs/` and raise its `pack_version`. The **Check packs** workflow validates every pack and builds it twice to confirm the archives are reproducible.
-2. Push a tag such as `v2026.11.01`. The **Release packs** workflow builds one archive per pack and the index `pipeline-packs.json` (each archive with its sha256), signs the index with the `dashboard-release` key and opens a **draft** release.
+1. Change a pack under `packs/` and raise its `pack_version`. The **Check packs** workflow validates every pack, scans it,
+   checks this README's catalog and builds every pack twice to confirm the archives are reproducible.
+2. Push a tag such as `v2026.11.01`. The **Release packs** workflow builds one archive per pack and the index
+   `pipeline-packs.json` (each archive with its sha256, plus the approved tools), signs the index with the `dashboard-release`
+   key and opens a **draft** release.
 3. Check the draft, then publish it. Dashboards read only the latest published release.
 
-A dashboard checks the index signature against the release public key built into its own verified code (the same key as in [allowed_signers](allowed_signers)), then each archive against the signed sha256, then every file, before installing anything.
+A dashboard checks the index signature against the release public key built into its own verified code (the same key as in
+[allowed_signers](allowed_signers)), then each archive against the signed sha256, then every file, before installing anything.
 
-The release workflow needs the repository secret `RELEASE_SSH_PRIVATE_KEY` (the `dashboard-release` private key used by the dashboard releases). Optionally set the repository variable `DASHBOARD_REPOSITORY` (for example `gptkiosk/rbp-control-dashboard`) to also run every pack through that dashboard's own validator at release.
+The release workflow needs the repository secret `RELEASE_SSH_PRIVATE_KEY` (the `dashboard-release` private key used by the
+dashboard releases). Optionally set the repository variable `DASHBOARD_REPOSITORY` (for example
+`gptkiosk/rbp-control-dashboard`) to also run every pack through that dashboard's own validator at release.
 
 To test locally:
 
 ```sh
 python3 -m unittest discover -s tests
 python3 tools/build.py --dashboard ../rcd-checkout
+python3 tools/scan.py --base-ref origin/main
+python3 tools/readme.py --check
 ```
+
+<!-- catalog:start (generated by tools/readme.py; do not edit by hand) -->
+
+## Approved templates
+
+### upubhub class (textbook, lesson plans, assessments)
+
+`upubhub-class` in pack `upubhub-class` 0.2.0 · Official, by gptkiosk · dashboard 0.6.88 or newer
+
+A short course a teacher uploads to upubhub.com and teaches from: an original textbook with discussion topics, one lesson plan per lesson, class assessment settings and an upload checklist. Uploading and class setup stay with the teacher.
+
+Settings you choose: Subject code, Level, Class name, Subject and scope, Number of lessons, Sources, Source details, Illustrate the lessons, Illustration style, Assessment attempts, Grading strictness, Assessment emphasis.
+
+Needs: dashboard checks course-package; services upubhub.
+
+## Approved tools
+
+A template may require only these. Asking for a new one is its own pull request to `platform/tools.json`.
+
+### Agents
+
+| Name | Id | Since | What it does |
+|---|---|---|---|
+| Claude Code | `claude` | 0.6.0 | Anthropic's coding agent, run on your Claude membership or API key. Writes and edits files in a story's workspace. |
+| Codex | `codex` | 0.6.0 | OpenAI's coding agent, run on your ChatGPT membership or API key. Writes and edits files in a story's workspace. |
+| Grok | `grok` | 0.6.0 | xAI's coding agent. Writes and edits files in a story's workspace. |
+| OpenClaw | `openclaw` | 0.6.0 | Open agent runtime for any OpenRouter model; used for cheaper read-only and review stories. |
+| Hermes | `hermes` | 0.6.0 | The coordinator: plans and follows a project, never writes code itself. |
+
+### System tools
+
+| Name | Id | Since | What it does |
+|---|---|---|---|
+| Python 3 | `python3` | 0.6.0 | Runs Python scripts and tests in a story's workspace. |
+| Node.js | `node` | 0.6.0 | Runs JavaScript builds and tests; installed with the agent tools. |
+| FFmpeg | `ffmpeg` | 0.6.0 | Converts and trims audio and video for media stories. |
+| Docker CLI | `docker` | 0.6.0 | Builds and runs containers; a host step, never inside an agent story. |
+| Colima | `colima` | 0.6.0 | The local container engine Docker uses on a Mac. |
+| GitHub CLI | `gh` | 0.6.0 | The dashboard's own repository and pull request steps; stories never call it. |
+| Gitleaks | `gitleaks` | 0.6.61 | Scans a workspace for committed secrets. |
+| CSS check | `csstree-validator` | 0.6.61 | Checks stylesheets for invalid CSS. |
+| Playwright | `playwright` | 0.6.85 | Drives a browser for screenshots and page checks. |
+
+### Providers
+
+| Name | Id | Since | What it does |
+|---|---|---|---|
+| OpenRouter | `openrouter` | 0.6.0 | API access to many models, billed per use with your own key. |
+| fal | `fal` | 0.6.13 | Image and video generation in Media studio, billed per use with your own key after you approve the spend. |
+
+### Dashboard checks
+
+| Name | Id | Since | What it does |
+|---|---|---|---|
+| Course package check | `course-package` | 0.6.87 | Checks a course folder against upubhub's import and class-setup limits before the verification story is accepted. |
+
+### Services
+
+| Name | Id | Since | What it does |
+|---|---|---|---|
+| upubhub.com | `upubhub` | 0.6.87 | Publishing and classroom site. Packs prepare files for it; uploading stays the user's step. |
+
+<!-- catalog:end -->

@@ -1,0 +1,33 @@
+{
+  "format": "dashboard-platform",
+  "version": "1.0",
+  "maintainers": ["gptkiosk"],
+  "agents": [
+    {"id": "claude", "name": "Claude Code", "app_min": "0.6.0", "description": "Anthropic's coding agent, run on your Claude membership or API key. Writes and edits files in a story's workspace."},
+    {"id": "codex", "name": "Codex", "app_min": "0.6.0", "description": "OpenAI's coding agent, run on your ChatGPT membership or API key. Writes and edits files in a story's workspace."},
+    {"id": "grok", "name": "Grok", "app_min": "0.6.0", "description": "xAI's coding agent. Writes and edits files in a story's workspace."},
+    {"id": "openclaw", "name": "OpenClaw", "app_min": "0.6.0", "description": "Open agent runtime for any OpenRouter model; used for cheaper read-only and review stories."},
+    {"id": "hermes", "name": "Hermes", "app_min": "0.6.0", "description": "The coordinator: plans and follows a project, never writes code itself."}
+  ],
+  "system_tools": [
+    {"id": "python3", "name": "Python 3", "app_min": "0.6.0", "description": "Runs Python scripts and tests in a story's workspace."},
+    {"id": "node", "name": "Node.js", "app_min": "0.6.0", "description": "Runs JavaScript builds and tests; installed with the agent tools."},
+    {"id": "ffmpeg", "name": "FFmpeg", "app_min": "0.6.0", "description": "Converts and trims audio and video for media stories."},
+    {"id": "docker", "name": "Docker CLI", "app_min": "0.6.0", "description": "Builds and runs containers; a host step, never inside an agent story."},
+    {"id": "colima", "name": "Colima", "app_min": "0.6.0", "description": "The local container engine Docker uses on a Mac."},
+    {"id": "gh", "name": "GitHub CLI", "app_min": "0.6.0", "description": "The dashboard's own repository and pull request steps; stories never call it."},
+    {"id": "gitleaks", "name": "Gitleaks", "app_min": "0.6.61", "description": "Scans a workspace for committed secrets."},
+    {"id": "csstree-validator", "name": "CSS check", "app_min": "0.6.61", "description": "Checks stylesheets for invalid CSS."},
+    {"id": "playwright", "name": "Playwright", "app_min": "0.6.85", "description": "Drives a browser for screenshots and page checks."}
+  ],
+  "providers": [
+    {"id": "openrouter", "name": "OpenRouter", "app_min": "0.6.0", "description": "API access to many models, billed per use with your own key."},
+    {"id": "fal", "name": "fal", "app_min": "0.6.13", "description": "Image and video generation in Media studio, billed per use with your own key after you approve the spend."}
+  ],
+  "checks": [
+    {"id": "course-package", "name": "Course package check", "app_min": "0.6.87", "description": "Checks a course folder against upubhub's import and class-setup limits before the verification story is accepted."}
+  ],
+  "services": [
+    {"id": "upubhub", "name": "upubhub.com", "app_min": "0.6.87", "hosts": ["upubhub.com"], "description": "Publishing and classroom site. Packs prepare files for it; uploading stays the user's step."}
+  ]
+}
