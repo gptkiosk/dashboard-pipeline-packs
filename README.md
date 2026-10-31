@@ -1,5 +1,13 @@
 # Dashboard pipeline packs
 
+## Functionality at a glance
+
+A data-only catalog of optional planner/project packs for the [Mac Control Dashboard](https://github.com/gptkiosk/mac-control-dashboard) and [Raspberry Pi Control Dashboard](https://github.com/gptkiosk/rbp-control-dashboard).
+
+- Packs contain JSON project definitions and Markdown guides, not executable agent code or a hosted service.
+- Dashboards install release archives after verifying the signed index, archive digests, and supported format.
+- The upubhub class pack guides creation of compatible course deliverables. Installing it does not establish a shared login or automatically publish content to upubhub; export/import and any service credentials remain explicit operator steps.
+
 Optional add-ons for the Mac and Raspberry Pi control dashboards (MCD and RCD). A pack teaches the dashboard's planner one kind of deliverable for one service, for example a upubhub.com class: its project type, intake questions, sign-offs and short format guides.
 
 You add a pack inside the dashboard, in **Settings → Installs & updates → Pipeline packs**. Nothing here needs to be downloaded by hand.
