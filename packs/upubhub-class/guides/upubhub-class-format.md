@@ -2,7 +2,8 @@
 
 Files, relative to the project folder:
 
-- `course/course.json`: title, audience, level, tool, objectives[], ai_provenance (`ai_generated` or `ai_assisted`), credits[], lessons[{id, title, objectives[], sections[]}]. Lesson ids look like `01-forces`.
+- `course/course.json`: code, title, audience, level, tool, objectives[], ai_provenance (`ai_generated` or `ai_assisted`), credits[], lessons[{id, title, objectives[], sections[]}]. Lesson ids look like `01-forces`.
+- Class code: `SUBJ:LL-Class name`, copied from the project settings; codes and levels in class-codes.md.
 - `course/textbook/<id>.md`: optional intro, then one `## ` heading per section, matching `sections` exactly and in order. At most 60,000 characters.
 - `course/topics.json`: {lesson id: [{section, label, kind, prompt, objective, anchor}]}. At most 12 per lesson. kind: person, historic_figure, place or subject. prompt 10 to 2,000 characters; objective 10 to 1,000.
 - Anchor: plain text copied from the section, occurring exactly once there, on a line with no links, images, code or markup. Empty means an end-of-section callout.

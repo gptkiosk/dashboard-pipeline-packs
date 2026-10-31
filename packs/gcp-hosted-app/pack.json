@@ -1,0 +1,17 @@
+{
+  "format": "dashboard-pipeline-pack",
+  "version": "0.1",
+  "id": "gcp-hosted-app",
+  "pack_version": "1.0.0",
+  "label": "GCP hosted app (containerized application on Google Cloud)",
+  "author": "gptkiosk",
+  "summary": "A containerized application deployed to an explicitly named Google Cloud target such as Cloud Run, with runtime verification and delivery evidence.",
+  "service": null,
+  "app_min": "0.6.88",
+  "project_types": [
+    "gcp-hosted-app"
+  ],
+  "guides": [],
+  "checks": [],
+  "connectors": []
+}

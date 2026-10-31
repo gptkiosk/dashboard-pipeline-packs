@@ -1,0 +1,7 @@
+# Every change needs a maintainer's review. The scan rules, the accepted findings, the approved tools, the build and the
+# workflows decide what a template may do, so a contributor can never change them in the same pull request as a template.
+*                   @gptkiosk
+/security/          @gptkiosk
+/platform/          @gptkiosk
+/tools/             @gptkiosk
+/.github/           @gptkiosk

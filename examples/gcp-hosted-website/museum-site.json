@@ -1,0 +1,20 @@
+{
+  "type": "gcp-hosted-website",
+  "title": "Small museum",
+  "brief": "An illustrated website for a small town museum, deployed to Google Cloud.",
+  "answers": {
+    "pages": "Home, Exhibits, Visit, Contact.",
+    "visual_style": "Calm, archival, serif headings, muted greens.",
+    "media_source": "existing assets only",
+    "media": "Use the museum's twelve existing photos; no generation.",
+    "hosting": "Existing GCP project and domain; Cloud Run in europe-west1."
+  },
+  "expect": {
+    "stories_min": 5,
+    "stories_max": 30,
+    "titles": [
+      "deploy|cloud run|pipeline",
+      "preview|review"
+    ]
+  }
+}

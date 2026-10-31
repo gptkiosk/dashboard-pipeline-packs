@@ -1,0 +1,17 @@
+{
+  "format": "dashboard-pipeline-pack",
+  "version": "0.1",
+  "id": "gcp-hosted-website",
+  "pack_version": "1.0.0",
+  "label": "GCP hosted website (illustrated site deployed to Google Cloud)",
+  "author": "gptkiosk",
+  "summary": "An original illustrated website with themed pages and generated media, delivered through an explicitly planned Google Cloud deployment and dashboard-managed preview review.",
+  "service": null,
+  "app_min": "0.6.88",
+  "project_types": [
+    "gcp-hosted-website"
+  ],
+  "guides": [],
+  "checks": [],
+  "connectors": []
+}

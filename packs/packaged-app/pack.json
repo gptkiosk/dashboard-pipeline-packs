@@ -1,0 +1,17 @@
+{
+  "format": "dashboard-pipeline-pack",
+  "version": "0.1",
+  "id": "packaged-app",
+  "pack_version": "1.0.0",
+  "label": "Packaged app (local install from a public GitHub release)",
+  "author": "gptkiosk",
+  "summary": "An application people install on their own machine from a signed package published as a GitHub release. Not cloud deployed. Examples: the Mac and Raspberry Pi control dashboards.",
+  "service": null,
+  "app_min": "0.6.88",
+  "project_types": [
+    "packaged-app"
+  ],
+  "guides": [],
+  "checks": [],
+  "connectors": []
+}

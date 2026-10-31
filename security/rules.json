@@ -1,0 +1,20 @@
+{
+  "format": "dashboard-pack-scan",
+  "version": "1.0",
+  "rules": [
+    {"id": "html", "description": "HTML tags or comments, which can hide text from a reviewer and carry markup into prompts.",
+     "pattern": "<!--|<\\s*/?\\s*(script|iframe|img|a|style|object|embed|svg|link|meta|form|input|details|span|div)\\b"},
+    {"id": "encoded", "description": "Long base64 or hex runs, data: URIs and escape sequences that hide a payload from review.",
+     "pattern": "[A-Za-z0-9+/]{60,}={0,2}|\\b[0-9a-fA-F]{40,}\\b|\\bdata:[a-z]+/[a-z0-9.+-]+[;,]|\\\\u[0-9a-fA-F]{4}|\\\\x[0-9a-fA-F]{2}"},
+    {"id": "agent-override", "description": "Text aimed at the model rather than the project: overriding instructions, role tags, hiding things from the user.",
+     "pattern": "(?i)\\b(ignore|disregard|forget|override)\\b.{0,30}\\b(previous|prior|above|earlier|all|any|system|safety)\\b.{0,20}\\b(instructions?|rules?|messages?|prompts?|guidelines?)\\b|\\bsystem prompt\\b|\\byou are now\\b|\\bdeveloper mode\\b|\\bjailbreak|<\\|im_(start|end)\\|>|\\[/?INST\\]|^#{1,6}\\s*(system|assistant)\\s*:|\\bdo not (tell|inform|mention|reveal|show)\\b.{0,20}\\b(the )?(user|operator|owner|teacher|reviewer)\\b"},
+    {"id": "secrets", "description": "Reading, printing or sending secrets, keys, tokens or credential files. A negated instruction (never paste credentials) is not a finding.",
+     "pattern": "(?i)(^|[\\s`'\"(])\\.env\\b|\\.ssh/|\\bid_(rsa|ed25519|ecdsa)\\b|\\bkeychain\\b|find-generic-password|(?<!not )(?<!never )(?<!n't )(?<!no )\\b(print|send|copy|upload|post|share|read|cat|echo|export|include|paste|reveal)\\b.{0,40}\\b(secrets?|tokens?|api[ _-]?keys?|passwords?|credentials?|private keys?)\\b"},
+    {"id": "network", "description": "Network tools and exfiltration endpoints: downloads, uploads, webhooks, tunnels and paste sites.",
+     "pattern": "(?i)\\b(curl|wget|netcat|ncat|scp|rsync|sftp|telnet|socat)\\b|\\bnc\\s+-|webhook|requestbin|pastebin|ngrok|transfer\\.sh|\\bpipedream\\b|interact\\.sh|burpcollaborator"},
+    {"id": "host-reach", "description": "Privileged or out-of-workspace actions: sudo, deleting trees, system paths, global installs, pushing code.",
+     "pattern": "(?i)\\bsudo\\b|\\brm\\s+-[a-z]*r[a-z]*f|\\bchmod\\s+(\\+s|[0-7]*7[0-7]{0,2}\\b)|(^|[\\s`'\"(])(/(etc|usr|var|private|Users|home|root|opt|System|Library)/|~/)|\\b(brew|apt(-get)?|yum|dnf|pip3?|npm|pnpm|yarn)\\s+(install|i|add)\\s+(-g|--global|-y)?|\\bgit\\s+(push|remote\\s+add|config\\s+--global)|\\bgh\\s+(api|secret|auth|repo|release|pr\\s+merge)\\b|\\|\\s*(ba|z)?sh\\b|\\beval\\s*\\(|\\bcrontab\\b|launchctl|LaunchAgents"},
+    {"id": "dashboard-control", "description": "Attempts to change the dashboard's own controls, permissions or review steps.",
+     "pattern": "(?i)\\b(settings|config)\\.json\\b|\\ballow-?list\\b|\\bpermissions?\\b.{0,20}\\b(grant|add|change|widen|bypass)|\\bdangerously|--yolo|bypass(ing)?\\b|\\bskip\\b.{0,20}\\b(the )?(check|checks|verification|review|sign-?offs?|approval|tests?)\\b|\\bauto-?approve|\\bwithout (asking|approval|review)\\b"}
+  ]
+}

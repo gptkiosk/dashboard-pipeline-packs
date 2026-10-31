@@ -1,0 +1,111 @@
+name: Model gates
+
+# Gate 3 (model review) and gate 4 (rehearsal) run only when a maintainer adds the `review` or `rehearse` label; contributors
+# cannot add labels. The workflow runs this repository's own (base branch) tools. The pull request's files are read as data:
+# its packs and examples are extracted with git, never executed, and links in them are refused. The model key is used only
+# by tools/model.py; the dashboard checkout that judges plans runs without it.
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: model-gates-${{ github.event.pull_request.number }}-${{ github.event.label.name }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: github.event.label.name == 'review'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PR: ${{ github.event.pull_request.number }}
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Fetch the pull request as data
+        run: git fetch --no-tags origin "pull/${PR}/head:pr-head"
+      - name: Review
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          REVIEW_MODEL: ${{ vars.REVIEW_MODEL }}
+        run: |
+          set -uo pipefail
+          if [ -z "$OPENROUTER_API_KEY" ] || [ -z "$REVIEW_MODEL" ]; then
+            printf '### Model review (advisory)\n\nNot configured: add the repository secret OPENROUTER_API_KEY and the variable REVIEW_MODEL.\n' > comment.md
+          else
+            python3 -I tools/review.py --base HEAD --head pr-head > comment.md || true
+          fi
+      - name: Post the review and clear the label
+        if: always()
+        run: |
+          [ -s comment.md ] && gh pr comment "$PR" --body-file comment.md
+          gh pr edit "$PR" --remove-label review || true
+
+  rehearse:
+    if: github.event.label.name == 'rehearse'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PR: ${{ github.event.pull_request.number }}
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      DASHBOARD_REPOSITORY: ${{ vars.DASHBOARD_REPOSITORY }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Extract the pull request's packs and examples as data
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "pull/${PR}/head:pr-head"
+          if git ls-tree -r pr-head -- packs examples | awk '$1 == "120000"' | grep -q .; then
+            echo "The pull request adds links under packs/ or examples/; packs hold regular files only." > comment.md; exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/pr"
+          git archive pr-head packs examples | tar -x -C "$RUNNER_TEMP/pr" --no-same-owner --no-same-permissions
+          git diff --name-only HEAD...pr-head -- packs examples | cut -d/ -f2 | sort -u > changed.txt
+          if ! python3 -I tools/build.py --check-only --packs "$RUNNER_TEMP/pr/packs" --examples "$RUNNER_TEMP/pr/examples" 2> build.txt; then
+            { printf '### Rehearsal\n\nThe pull request does not pass the format check:\n\n```text\n'; head -c 4000 build.txt; printf '\n```\n'; } > comment.md
+            exit 1
+          fi
+      - name: Fetch the dashboard that plans and judges
+        run: |
+          set -euo pipefail
+          [ -n "$DASHBOARD_REPOSITORY" ] || { echo "Not configured: set the repository variable DASHBOARD_REPOSITORY." > comment.md; exit 1; }
+          git clone --depth 1 "https://github.com/${DASHBOARD_REPOSITORY}.git" "$RUNNER_TEMP/dashboard"
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet -r "$RUNNER_TEMP/dashboard/apps/api/requirements.lock.txt"
+      - name: Rehearse the changed templates
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          REHEARSAL_MODEL: ${{ vars.REHEARSAL_MODEL }}
+        run: |
+          set -uo pipefail
+          if [ -z "$OPENROUTER_API_KEY" ] || [ -z "$REHEARSAL_MODEL" ]; then
+            printf '### Rehearsal\n\nNot configured: add the repository secret OPENROUTER_API_KEY and the variable REHEARSAL_MODEL.\n' > comment.md; exit 1
+          fi
+          args=()
+          while read -r id; do [ -d "$RUNNER_TEMP/pr/packs/$id" ] && args+=(--pack "$id"); done < changed.txt
+          if [ ${#args[@]} -eq 0 ]; then printf '### Rehearsal\n\nThis pull request changes no templates.\n' > comment.md; exit 0; fi
+          python3 -I tools/rehearse.py --dashboard "$RUNNER_TEMP/dashboard" --python "$RUNNER_TEMP/venv/bin/python" \
+            --packs-dir "$RUNNER_TEMP/pr/packs" --examples-dir "$RUNNER_TEMP/pr/examples" "${args[@]}" > comment.md 2> err.txt
+          status=$?
+          [ -s comment.md ] || { printf '### Rehearsal\n\n'; head -c 2000 err.txt; } > comment.md
+          cat comment.md >> "$GITHUB_STEP_SUMMARY"
+          exit $status
+      - name: Post the result and clear the label
+        if: always()
+        run: |
+          [ -s comment.md ] || printf '### Rehearsal\n\nThe rehearsal stopped before it could report; see the workflow run.\n' > comment.md
+          gh pr comment "$PR" --body-file comment.md
+          gh pr edit "$PR" --remove-label rehearse || true

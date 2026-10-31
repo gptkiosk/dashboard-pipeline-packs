@@ -7,6 +7,10 @@ archive with its sha256, and SHA256SUMS. The release workflow then signs the ind
 The checks here are the structural rules the dashboard enforces at install (apps/api/pipeline_packs.py). With
 --dashboard <checkout>, every pack is also run through that dashboard's own validate(), which knows its project-type
 schema, shipped guides, checks and connectors.
+
+platform/tools.json lists what a template may require (agents, system tools, providers, checks, services). Every name a
+pack or template names must be listed there, and the tool's app_min must not be newer than the pack's. Adding a tool is
+its own pull request.
 """
 from __future__ import annotations
 
@@ -30,6 +34,101 @@ GUIDE_RE = re.compile(r"^guides/[a-z0-9][a-z0-9-]{0,60}\.md$")
 MAX_FILE_BYTES = 40_000
 MAX_FILES = 40
 MAX_ARCHIVE_BYTES = 1_000_000
+REQUIRE_KINDS = ("agents", "system_tools", "providers", "checks", "services")
+AUTHOR_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$")
+
+
+def version_key(value: str) -> tuple[int, ...]:
+    return tuple(int(x) for x in value.split("."))
+
+
+def load_platform(path: Path = ROOT / "platform" / "tools.json") -> dict:
+    data = json.loads(path.read_text("utf-8"))
+    if (data.get("format"), data.get("version")) != ("dashboard-platform", "1.0"):
+        raise SystemExit("platform/tools.json is not a dashboard-platform 1.0 file")
+    for kind in REQUIRE_KINDS:
+        for tool in data[kind]:
+            if not (ID_RE.fullmatch(tool["id"]) or re.fullmatch(r"^[a-z0-9][a-z0-9._-]{0,39}$", tool["id"])) or not tool.get("name") \
+                    or not tool.get("description") or not VERSION_RE.fullmatch(tool.get("app_min", "")):
+                raise SystemExit(f"platform/tools.json: {kind} entry {tool.get('id')!r} needs id, name, description and app_min")
+    return data
+
+
+def requirements(manifest: dict, files: dict[str, bytes]) -> dict[str, list[str]]:
+    """Everything the pack and its templates say they need, merged by kind."""
+    need = {k: [] for k in REQUIRE_KINDS}
+    need["checks"] += manifest.get("checks") or []
+    if (manifest.get("service") or {}).get("id"):
+        need["services"].append(manifest["service"]["id"])
+    for t in manifest.get("project_types") or []:
+        try:
+            r = json.loads(files.get(f"project-types/{t}.json", b"{}")).get("requires") or {}
+        except (ValueError, UnicodeError):
+            continue
+        for kind in REQUIRE_KINDS:
+            need[kind] += r.get(kind, []) if isinstance(r.get(kind), list) else []
+    return {k: sorted(set(v)) for k, v in need.items() if v}
+
+
+def platform_problems(manifest: dict, files: dict[str, bytes], platform: dict) -> list[str]:
+    problems = []
+    if not AUTHOR_RE.fullmatch(str(manifest.get("author", ""))):
+        problems.append("pack.json needs author: the GitHub account that maintains the pack")
+    for kind, names in requirements(manifest, files).items():
+        known = {t["id"]: t for t in platform[kind]}
+        for name in names:
+            if name not in known:
+                problems.append(f"requires {kind} {name!r}, which is not in platform/tools.json; adding a tool is its own pull request")
+            elif VERSION_RE.fullmatch(str(manifest.get("app_min", ""))) and version_key(known[name]["app_min"]) > version_key(manifest["app_min"]):
+                problems.append(f"{kind} {name!r} needs dashboard {known[name]['app_min']}, newer than the pack's app_min {manifest['app_min']}")
+    return problems
+
+
+def example_problems(manifest: dict, files: dict[str, bytes], examples: Path) -> list[str]:
+    """Every template needs at least one example (examples/<pack id>/*.json), used by the rehearsal gate. Examples are not shipped."""
+    problems, covered = [], set()
+    for path in sorted((examples / str(manifest.get("id"))).glob("*.json")):
+        rel = f"examples/{manifest.get('id')}/{path.name}"
+        try:
+            ex = json.loads(path.read_text("utf-8"))
+        except (OSError, ValueError, UnicodeError):
+            problems.append(f"{rel} is not valid JSON")
+            continue
+        type_id = ex.get("type") if isinstance(ex, dict) else None
+        if type_id not in (manifest.get("project_types") or []):
+            problems.append(f"{rel}: type must be one of the pack's templates")
+            continue
+        covered.add(type_id)
+        t = json.loads(files.get(f"project-types/{type_id}.json", b"{}"))
+        known = {f["id"] for f in t.get("customize", [])} | {q["id"] for q in t.get("intake_questions", [])} | {"audience", "boundaries"}
+        answers = ex.get("answers") or {}
+        if not isinstance(answers, dict) or set(answers) - known or not all(isinstance(v, str) for v in answers.values()):
+            problems.append(f"{rel}: answers must be text keyed by the template's setting ids")
+        if not str(ex.get("title", "")).strip() or not str(ex.get("brief", "")).strip():
+            problems.append(f"{rel}: needs a title and a brief")
+        expect = ex.get("expect") or {}
+        if not isinstance(expect, dict) or set(expect) - {"stories_min", "stories_max", "titles"} or \
+                not all(isinstance(expect.get(k, 1), int) for k in ("stories_min", "stories_max")) or not isinstance(expect.get("titles", []), list):
+            problems.append(f"{rel}: expect holds stories_min, stories_max and titles (patterns)")
+        else:
+            for pattern in expect.get("titles", []):
+                try:
+                    re.compile(pattern)
+                except (re.error, TypeError):
+                    problems.append(f"{rel}: {pattern!r} is not a valid pattern")
+    for type_id in sorted(set(manifest.get("project_types") or []) - covered):
+        problems.append(f"template {type_id} has no example in examples/{manifest.get('id')}/; the rehearsal gate needs one")
+    return problems
+
+
+def settings_labels(manifest: dict, files: dict[str, bytes]) -> list[str]:
+    labels = []
+    for t in manifest.get("project_types") or []:
+        try:
+            labels += [f["label"] for f in json.loads(files[f"project-types/{t}.json"]).get("customize", [])]
+        except (KeyError, ValueError, UnicodeError, TypeError):
+            continue
+    return labels
 
 
 def pack_files(folder: Path) -> tuple[dict[str, bytes], list[str]]:
@@ -92,7 +191,14 @@ def dashboard_check(checkout: Path, files: dict[str, bytes]) -> list[str]:
     sys.path.insert(0, str(checkout / "apps" / "api"))
     import pipeline_packs  # noqa: PLC0415 - the checkout is only known at run time
     from version import __version__  # noqa: PLC0415
-    return pipeline_packs.validate(files, __version__)[1]
+    problems = pipeline_packs.validate(files, __version__)[1]
+    # A store template that shares an id with one the dashboard bundles must be the same file, so the offline copy and the
+    # store never plan differently.
+    for rel, data in files.items():
+        bundled = checkout / "packs" / rel
+        if rel.startswith("project-types/") and bundled.is_file() and bundled.read_bytes() != data:
+            problems.append(f"{rel} differs from the copy the dashboard bundles ({bundled.relative_to(checkout)}); keep them identical")
+    return problems
 
 
 def archive(pack_id: str, files: dict[str, bytes]) -> bytes:
@@ -114,15 +220,19 @@ def main() -> int:
     parser.add_argument("--packs", type=Path, default=ROOT / "packs")
     parser.add_argument("--out", type=Path, default=ROOT / "dist")
     parser.add_argument("--dashboard", type=Path, help="a dashboard checkout whose pipeline_packs.validate() every pack must also pass")
+    parser.add_argument("--examples", type=Path, default=ROOT / "examples")
     parser.add_argument("--check-only", action="store_true", help="validate, write nothing")
     args = parser.parse_args()
 
     folders = sorted(p for p in args.packs.iterdir() if p.is_dir() and not p.name.startswith(".")) if args.packs.is_dir() else []
+    platform = load_platform()
     failed, entries, archives = False, [], {}
     for folder in folders:
         files, problems = pack_files(folder)
         manifest, more = check(folder, files)
         problems += more
+        if manifest:
+            problems += platform_problems(manifest, files, platform) + example_problems(manifest, files, args.examples)
         if not problems and args.dashboard:
             problems += dashboard_check(args.dashboard, files)
         if problems:
@@ -138,7 +248,9 @@ def main() -> int:
         archives[name] = data
         entries.append({"id": manifest["id"], "pack_version": manifest["pack_version"], "label": manifest["label"],
                         "summary": manifest.get("summary", ""), "service": manifest.get("service"),
-                        "archive": name, "sha256": hashlib.sha256(data).hexdigest(), "app_min": manifest["app_min"]})
+                        "archive": name, "sha256": hashlib.sha256(data).hexdigest(), "app_min": manifest["app_min"],
+                        "author": manifest["author"], "trust": "official" if manifest["author"] in platform["maintainers"] else "community",
+                        "requires": requirements(manifest, files), "settings": settings_labels(manifest, files)})
         print(f"{folder.name}: ok ({manifest['pack_version']}, {len(files)} files)")
     if failed:
         return 1
@@ -153,7 +265,8 @@ def main() -> int:
             stale.unlink()
     for name, data in archives.items():
         (args.out / name).write_bytes(data)
-    index = {"format": INDEX_FORMAT[0], "version": INDEX_FORMAT[1], "packs": entries}
+    tools = {kind: [{k: t[k] for k in ("id", "name", "description", "app_min")} for t in platform[kind]] for kind in REQUIRE_KINDS}
+    index = {"format": INDEX_FORMAT[0], "version": INDEX_FORMAT[1], "packs": entries, "tools": tools}
     (args.out / "pipeline-packs.json").write_text(json.dumps(index, indent=2, sort_keys=True) + "\n", "utf-8")
     sums = [f"{hashlib.sha256((args.out / n).read_bytes()).hexdigest()}  {n}" for n in sorted([*archives, "pipeline-packs.json"])]
     (args.out / "SHA256SUMS").write_text("\n".join(sums) + "\n", "utf-8")

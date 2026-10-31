@@ -14,10 +14,25 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0              # the scan compares templates with the base branch
+          persist-credentials: false
       - name: Tests
         run: python3 -m unittest discover -s tests -v
       - name: Validate every pack and build the release files
         run: python3 -I tools/build.py
+      - name: Injection scan (compared with the base branch)
+        env:
+          BASE: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}
+        run: |
+          set -euo pipefail
+          if git rev-parse --verify --quiet "$BASE^{commit}" >/dev/null; then
+            python3 -I tools/scan.py --base-ref "$BASE"
+          else
+            python3 -I tools/scan.py
+          fi
+      - name: README catalog is current
+        run: python3 -I tools/readme.py --check
       - name: Build twice and compare (archives must be reproducible)
         run: |
           set -euo pipefail

@@ -1,0 +1,16 @@
+{
+  "type": "other",
+  "title": "Spreadsheet cleanup tool",
+  "brief": "A command-line script that cleans a monthly sales spreadsheet and writes a summary CSV.",
+  "answers": {
+    "deliverable": "A Python script with tests and a README; it runs on the operator's laptop.",
+    "special_needs": "Input files can be large; never change the original file."
+  },
+  "expect": {
+    "stories_min": 2,
+    "stories_max": 20,
+    "titles": [
+      "test|verif"
+    ]
+  }
+}

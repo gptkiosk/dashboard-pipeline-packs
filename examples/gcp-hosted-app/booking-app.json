@@ -1,0 +1,18 @@
+{
+  "type": "gcp-hosted-app",
+  "title": "Room booking",
+  "brief": "A web app where staff book meeting rooms, hosted on Google Cloud Run.",
+  "answers": {
+    "features": "Sign in, see rooms by day, book and cancel a slot.",
+    "target": "Cloud Run behind the team's existing domain; a CI pipeline deploys it.",
+    "data": "Bookings in Cloud SQL; Google sign-in limited to the company domain.",
+    "hosting": "New GCP project; region us-central1; small budget."
+  },
+  "expect": {
+    "stories_min": 4,
+    "stories_max": 30,
+    "titles": [
+      "deploy|cloud run|pipeline"
+    ]
+  }
+}
