@@ -6,7 +6,7 @@
   "label": "upubhub class (textbook, lesson plans, assessments)",
   "author": "gptkiosk",
   "summary": "Plans a short course for upubhub.com: a textbook with discussion topics, lesson plans and class assessment settings, written new or converted from your own files, checked against upubhub's limits and pushed as private drafts after your final sign-off.",
-  "changes": "Content source setting: write new text, or convert your own inputs/textbook.md and inputs/lesson-plans files without rewriting them. A final sign-off now comes before anything leaves your computer, and after it the dashboard can push the course to upubhub as private drafts and an invite-only class (needs dashboard 0.6.90). Source details moved from a setting into the source sign-off.",
+  "changes": "Content source setting: write new text, or convert your own inputs/textbook.md and inputs/lesson-plans files without rewriting them. A final sign-off now comes before anything leaves your computer, and after it the dashboard can push the course to upubhub as private drafts and an invite-only class (needs dashboard 0.6.90). Provided text is declared hand-crafted. Source details moved from a setting into the source sign-off.",
   "service": {"id": "upubhub", "label": "upubhub.com", "credential": null, "hosts": ["upubhub.com"]},
   "app_min": "0.6.90",
   "project_types": ["upubhub-class"],

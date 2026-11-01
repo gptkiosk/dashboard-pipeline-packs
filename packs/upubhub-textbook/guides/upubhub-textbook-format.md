@@ -2,7 +2,7 @@
 
 Files, relative to the project folder:
 
-- `course/course.json`: kind `textbook`, title, audience, level, tool, objectives[], ai_provenance (`ai_generated` or `ai_assisted`), credits[], lessons[{id, title, objectives[], sections[]}]. Each lesson is one chapter. Ids look like `01-arches`.
+- `course/course.json`: kind `textbook`, title, audience, level, tool, objectives[], ai_provenance (`hand_crafted` if provided, else `ai_generated` or `ai_assisted`), credits[], lessons[{id, title, objectives[], sections[]}]. Each lesson is one chapter. Ids look like `01-arches`.
 - `course/textbook/<id>.md`: optional intro, then one `## ` heading per section, matching `sections` exactly and in order. At most 60,000 characters.
 - `course/topics.json`: {chapter id: [{section, label, kind, prompt, objective, anchor}]}. At most 12 per chapter. kind: person, historic_figure, place or subject. prompt 10 to 2,000 characters; objective 10 to 1,000.
 - Anchor: plain text copied from the section, occurring exactly once there, on a line with no links, images, code or markup. Empty means an end-of-section callout.
@@ -12,4 +12,4 @@ Files, relative to the project folder:
 
 No lesson plans, assessments or other files under `course/`.
 
-Provided text: `inputs/textbook.md`, a `# ` heading per chapter when there are several, a `## ` heading per section. It is copied as written.
+Provided text: `inputs/textbook.md`, a `# ` heading per chapter when there are several, a `## ` heading per section. It is copied as written and declared `hand_crafted`; topics and structure added around it do not change that.

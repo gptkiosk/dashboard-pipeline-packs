@@ -1,7 +1,7 @@
 {
   "type": "upubhub-class",
   "title": "The water cycle, from my own notes",
-  "brief": "A two-lesson science class built from the textbook and lesson plans I wrote myself. My files are in inputs/textbook.md and inputs/lesson-plans/; convert them without rewriting, add discussion topics and assessments, and let me sign off before it goes to upubhub.",
+  "brief": "A two-lesson science class built from the textbook and lesson plans I wrote myself. My files are in inputs/textbook.md and inputs/lesson-plans/; convert them without rewriting and declare them hand-crafted, add discussion topics and assessments, and let me sign off before it goes to upubhub.",
   "answers": {
     "content_source": "provided",
     "subject_code": "SCI",

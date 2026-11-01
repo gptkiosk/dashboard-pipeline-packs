@@ -1,7 +1,7 @@
 {
   "type": "upubhub-lesson-plan",
   "title": "My poetry lesson, ready for upubhub",
-  "brief": "I already wrote a lesson plan on reading a poem aloud; it is in inputs/lesson-plans/. Convert it without changing my wording and let me approve it before it goes to upubhub.",
+  "brief": "I already wrote a lesson plan on reading a poem aloud; it is in inputs/lesson-plans/. Convert it without changing my wording, declare it hand-crafted, and let me approve it before it goes to upubhub.",
   "answers": {
     "content_source": "provided",
     "plan_title": "Reading a Poem Aloud",
