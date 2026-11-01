@@ -15,7 +15,8 @@
     "stories_max": 20,
     "titles": [
       "verify course package files",
-      "fact.?check|accuracy"
+      "fact.?check|accuracy",
+      "push the course to upubhub"
     ]
   }
 }

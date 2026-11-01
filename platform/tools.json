@@ -28,6 +28,9 @@
     {"id": "course-package", "name": "Course package check", "app_min": "0.6.87", "description": "Checks a course folder against upubhub's import and class-setup limits before the verification story is accepted."}
   ],
   "services": [
-    {"id": "upubhub", "name": "upubhub.com", "app_min": "0.6.87", "hosts": ["upubhub.com"], "description": "Publishing and classroom site. Packs prepare files for it; uploading stays the user's step."}
+    {"id": "upubhub", "name": "upubhub.com", "app_min": "0.6.87", "hosts": ["upubhub.com"], "description": "Publishing and classroom site. Packs prepare files for it; the user uploads them, or pushes them with the upubhub-push connector after signing off."}
+  ],
+  "connectors": [
+    {"id": "upubhub-push", "name": "Push to upubhub", "app_min": "0.6.90", "description": "After your final sign-off, the dashboard pushes a course, textbook or lesson plan to upubhub.com as private drafts with your saved upubhub token. Agents never hold the token."}
   ]
 }

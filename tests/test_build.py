@@ -105,6 +105,64 @@ class BuildTest(unittest.TestCase):
             result = build(base / "packs", base / "out")
             self.assertIn("template sample-course has no example", result.stderr)
 
+    def test_changes_reach_the_index_and_are_bounded(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            write_pack(base / "packs", changes="  Adds a provided-text mode.  ")
+            self.assertEqual(build(base / "packs", base / "out").returncode, 0)
+            entry = json.loads((base / "out" / "pipeline-packs.json").read_text("utf-8"))["packs"][0]
+            self.assertEqual(entry["changes"], "Adds a provided-text mode.")
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            write_pack(base / "packs")
+            self.assertEqual(build(base / "packs", base / "out").returncode, 0)
+            self.assertNotIn("changes", json.loads((base / "out" / "pipeline-packs.json").read_text("utf-8"))["packs"][0])
+        for bad in ("x" * 601, "   ", ["a list"]):
+            with tempfile.TemporaryDirectory() as tmp:
+                base = Path(tmp)
+                write_pack(base / "packs", changes=bad)
+                result = build(base / "packs", base / "out")
+                self.assertEqual(result.returncode, 1, bad)
+                self.assertIn("changes is optional, but when present it must be text of 1 to 600 characters", result.stderr)
+
+    def test_connectors_are_approved_tools_old_enough_for_the_pack(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            write_pack(base / "packs", connectors=["upubhub-push", "mystery-sync"])
+            result = build(base / "packs", base / "out")
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("connectors 'mystery-sync', which is not in platform/tools.json", result.stderr)
+            self.assertIn("connectors 'upubhub-push' needs dashboard 0.6.90", result.stderr)
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            write_pack(base / "packs", connectors=["upubhub-push"], app_min="0.6.90")
+            self.assertEqual(build(base / "packs", base / "out").returncode, 0)
+            index = json.loads((base / "out" / "pipeline-packs.json").read_text("utf-8"))
+            self.assertEqual(index["packs"][0]["requires"]["connectors"], ["upubhub-push"])
+            self.assertEqual({t["id"] for t in index["tools"]["connectors"]}, {"upubhub-push"})
+
+    def test_two_packs_may_share_a_guide_name_only_with_identical_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            write_pack(base / "packs")
+            twin = base / "packs" / "twin-course"
+            twin.mkdir()
+            for rel in ("pack.json", "project-types/sample-course.json", "guides/sample-format.md"):
+                (twin / rel).parent.mkdir(parents=True, exist_ok=True)
+                (twin / rel).write_bytes((base / "packs" / "sample-course" / rel).read_bytes())
+            (twin / "project-types" / "sample-course.json").rename(twin / "project-types" / "twin-course.json")
+            m = json.loads((twin / "pack.json").read_text("utf-8"))
+            (twin / "pack.json").write_text(json.dumps({**m, "id": "twin-course", "project_types": ["twin-course"]}), "utf-8")
+            (twin / "project-types" / "twin-course.json").write_text(json.dumps({**TYPE, "id": "twin-course"}), "utf-8")
+            (base / "examples" / "twin-course").mkdir()
+            (base / "examples" / "twin-course" / "one.json").write_text(json.dumps(
+                {"type": "twin-course", "title": "One", "brief": "A sample.", "answers": {}}), "utf-8")
+            self.assertEqual(build(base / "packs", base / "out").returncode, 0)
+            (twin / "guides" / "sample-format.md").write_text("# A different format\n", "utf-8")
+            result = build(base / "packs", base / "out")
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("guides/sample-format.md differs from the guide of the same name in pack sample-course", result.stderr)
+
     def test_no_packs_is_not_a_failure(self):
         with tempfile.TemporaryDirectory() as tmp:
             (Path(tmp) / "packs").mkdir()

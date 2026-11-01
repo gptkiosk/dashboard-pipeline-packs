@@ -1,0 +1,27 @@
+{
+  "type": "upubhub-class",
+  "title": "The water cycle, from my own notes",
+  "brief": "A two-lesson science class built from the textbook and lesson plans I wrote myself. My files are in inputs/textbook.md and inputs/lesson-plans/; convert them without rewriting and declare them hand-crafted, add discussion topics and assessments, and let me sign off before it goes to upubhub.",
+  "answers": {
+    "content_source": "provided",
+    "subject_code": "SCI",
+    "level": "5",
+    "class_name": "The Water Cycle",
+    "subject_scope": "Evaporation, condensation, precipitation and collection, with everyday examples. No climate policy.",
+    "lessons": "2",
+    "sources": "original writing",
+    "attempts": "2",
+    "strictness": "lenient",
+    "emphasis": "reasoning"
+  },
+  "expect": {
+    "stories_min": 10,
+    "stories_max": 24,
+    "titles": [
+      "check the provided files",
+      "verify course package files",
+      "approve the course for upubhub",
+      "push the course to upubhub"
+    ]
+  }
+}

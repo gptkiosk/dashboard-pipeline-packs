@@ -1,0 +1,17 @@
+{
+  "format": "dashboard-pipeline-pack",
+  "version": "0.1",
+  "id": "upubhub-lesson-plan",
+  "pack_version": "0.1.0",
+  "label": "upubhub lesson plan (one lesson)",
+  "author": "gptkiosk",
+  "summary": "Plans one lesson plan for upubhub.com: objectives, materials, timed activities and a check for understanding, written new or converted from your own Markdown and pushed as a private draft after your final sign-off.",
+  "changes": "First version: write a lesson plan or convert your own file in inputs/lesson-plans, then push it to upubhub as a private draft after your final sign-off.",
+  "service": {"id": "upubhub", "label": "upubhub.com", "credential": null, "hosts": ["upubhub.com"]},
+  "app_min": "0.6.90",
+  "project_types": ["upubhub-lesson-plan"],
+  "guides": ["upubhub-lesson-plan-format.md", "lesson-plan-design.md"],
+  "general_guides": ["readme-and-docs.md"],
+  "checks": [],
+  "connectors": ["upubhub-push"]
+}

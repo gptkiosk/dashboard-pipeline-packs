@@ -1,0 +1,23 @@
+{
+  "type": "upubhub-lesson-plan",
+  "title": "A lesson on arch bridges",
+  "brief": "One 45-minute hands-on lesson where students build paper arches and test how much weight they hold, to go with a textbook chapter on arch bridges.",
+  "answers": {
+    "content_source": "write",
+    "plan_title": "Why Arches Hold",
+    "lesson_scope": "Compression in arches, using paper and coins. Grade 6 class of about 25. Goes with the chapter Arches in How Bridges Stand Up.",
+    "level": "6",
+    "minutes": "45",
+    "approach": "hands-on",
+    "sources": "original writing"
+  },
+  "expect": {
+    "stories_min": 7,
+    "stories_max": 14,
+    "titles": [
+      "verify lesson plan files",
+      "approve the lesson plan for upubhub",
+      "push the lesson plan to upubhub"
+    ]
+  }
+}

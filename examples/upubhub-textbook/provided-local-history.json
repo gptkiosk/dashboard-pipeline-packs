@@ -1,0 +1,24 @@
+{
+  "type": "upubhub-textbook",
+  "title": "My local history notes as a textbook",
+  "brief": "I wrote a two-chapter local history of our river town in inputs/textbook.md. Convert it as written and declare it hand-crafted, add discussion topics, and let me approve it before it goes to upubhub.",
+  "answers": {
+    "content_source": "provided",
+    "book_title": "A River Town Through Time",
+    "subject_scope": "The founding of the town and its mills, then the railway years. Adult readers. No family genealogy.",
+    "level": "10",
+    "chapters": "2",
+    "topics": "4",
+    "sources": "original writing"
+  },
+  "expect": {
+    "stories_min": 9,
+    "stories_max": 20,
+    "titles": [
+      "check the provided files",
+      "verify textbook files",
+      "approve the textbook for upubhub",
+      "push the textbook to upubhub"
+    ]
+  }
+}

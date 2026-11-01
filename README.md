@@ -6,7 +6,7 @@ A data-only catalog of optional planner/project packs for the [Mac Control Dashb
 
 - Packs contain JSON project definitions and Markdown guides, not executable agent code or a hosted service.
 - Dashboards install release archives after verifying the signed index, archive digests, and supported format.
-- The upubhub class pack guides creation of compatible course deliverables. Installing it does not establish a shared login or automatically publish content to upubhub; export/import and any service credentials remain explicit operator steps.
+- The upubhub packs (class, textbook, lesson plan) guide creation of compatible deliverables. Installing one does not establish a shared login or publish anything: content reaches upubhub only when the user pushes it from the dashboard after a final sign-off (connector `upubhub-push`, dashboard 0.6.90 or newer, with the user's own saved upubhub token) or uploads it by hand. Pushed items land as private drafts.
 
 Templates for the Mac and Raspberry Pi control dashboards (MCD and RCD). A template turns a short brief into a predictable,
 repeatable project run for one kind of deliverable, for example a upubhub.com class: the stories to plan, the checks a plan
@@ -16,7 +16,7 @@ Each template has a fixed part and a few **settings**. The fixed part is what ma
 everyone. The settings (numbers, choices, yes or no, and a little short text) are what you personalize, and they cannot
 change the fixed part.
 
-You add templates inside the dashboard, in **Settings → Installs & updates**. Nothing here needs to be downloaded by hand.
+You add templates inside the dashboard, in **Settings → Template store**. Nothing here needs to be downloaded by hand.
 Templates are published in packs; this repository keeps its original name so existing dashboards keep finding it.
 
 ## What a pack is
@@ -27,13 +27,19 @@ you to update.
 
 ```
 packs/<id>/
-  pack.json                   id, pack_version, label, author, summary, service, app_min, project_types, guides, general_guides, checks, connectors
+  pack.json                   id, pack_version, label, author, summary, changes, service, app_min, project_types, guides, general_guides, checks, connectors
   project-types/<type>.json   the template: plan text, checks, sign-offs, settings (customize) and requires
   guides/<name>.md            short format guides the planner and stories read
 ```
 
 The template format is described in the dashboard's `docs/configuration/project-types.md`; packs in
-`docs/configuration/pipeline-packs.md`. To offer a template, read [CONTRIBUTING.md](CONTRIBUTING.md).
+`docs/configuration/pipeline-packs.md`.
+
+## Submit a template
+
+Anyone can offer a template. [CONTRIBUTING.md](CONTRIBUTING.md) is the full guide: copy an existing pack, describe every field,
+try it in your own dashboard with **Settings → Template store → Import a template**, run the local checks and open a pull
+request. Accepted templates are listed as **Community** with your account name.
 
 ## How templates are checked
 
@@ -139,13 +145,33 @@ Needs: one of the agents claude, codex, grok, openclaw.
 
 ### upubhub class (textbook, lesson plans, assessments)
 
-`upubhub-class` in pack `upubhub-class` 0.2.0 · Official, by gptkiosk · dashboard 0.6.88 or newer
+`upubhub-class` in pack `upubhub-class` 0.3.0 · Official, by gptkiosk · dashboard 0.6.90 or newer
 
-A short course a teacher uploads to upubhub.com and teaches from: an original textbook with discussion topics, one lesson plan per lesson, class assessment settings and an upload checklist. Uploading and class setup stay with the teacher.
+A short course a teacher teaches from on upubhub.com: a textbook with discussion topics, one lesson plan per lesson and class assessment settings. The text is written new or converted from the teacher's own files. After the teacher's final sign-off the dashboard can push it to upubhub as private drafts and an invite-only class.
 
-Settings you choose: Subject code, Level, Class name, Subject and scope, Number of lessons, Sources, Source details, Illustrate the lessons, Illustration style, Assessment attempts, Grading strictness, Assessment emphasis.
+Settings you choose: Content source, Subject code, Level, Class name, Subject and scope, Number of lessons, Sources, Illustrate the lessons, Illustration style, Assessment attempts, Grading strictness, Assessment emphasis.
 
-Needs: dashboard checks course-package; services upubhub.
+Needs: dashboard checks course-package; services upubhub; connectors upubhub-push.
+
+### upubhub lesson plan (one lesson)
+
+`upubhub-lesson-plan` in pack `upubhub-lesson-plan` 0.1.0 · Official, by gptkiosk · dashboard 0.6.90 or newer
+
+One lesson plan for upubhub.com: objectives, materials, timed activities, a check for understanding and notes for when students struggle, written new or converted from the teacher's own Markdown. After the teacher's final sign-off the dashboard can push it to upubhub as a private draft.
+
+Settings you choose: Content source, Lesson title, Topic and scope, Level, Lesson length (minutes), Approach, Sources.
+
+Needs: services upubhub; connectors upubhub-push.
+
+### upubhub textbook (chapters with discussion topics)
+
+`upubhub-textbook` in pack `upubhub-textbook` 0.1.0 · Official, by gptkiosk · dashboard 0.6.90 or newer
+
+One textbook for upubhub.com: chapters with "## " sections and discussion (chat-out) topics anchored in the text, written new or converted from the author's own Markdown. After the author's final sign-off the dashboard can push it to upubhub as a private draft.
+
+Settings you choose: Content source, Textbook title, Subject and scope, Level, Number of chapters, Discussion topics per chapter, Sources, Illustrate the chapters, Illustration style.
+
+Needs: services upubhub; connectors upubhub-push.
 
 ## Approved tools
 
@@ -192,6 +218,12 @@ A template may require only these. Asking for a new one is its own pull request 
 
 | Name | Id | Since | What it does |
 |---|---|---|---|
-| upubhub.com | `upubhub` | 0.6.87 | Publishing and classroom site. Packs prepare files for it; uploading stays the user's step. |
+| upubhub.com | `upubhub` | 0.6.87 | Publishing and classroom site. Packs prepare files for it; the user uploads them, or pushes them with the upubhub-push connector after signing off. |
+
+### Connectors
+
+| Name | Id | Since | What it does |
+|---|---|---|---|
+| Push to upubhub | `upubhub-push` | 0.6.90 | After your final sign-off, the dashboard pushes a course, textbook or lesson plan to upubhub.com as private drafts with your saved upubhub token. Agents never hold the token. |
 
 <!-- catalog:end -->

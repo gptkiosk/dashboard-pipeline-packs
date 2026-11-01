@@ -1,0 +1,17 @@
+{
+  "format": "dashboard-pipeline-pack",
+  "version": "0.1",
+  "id": "upubhub-textbook",
+  "pack_version": "0.1.0",
+  "label": "upubhub textbook (chapters with discussion topics)",
+  "author": "gptkiosk",
+  "summary": "Plans one textbook for upubhub.com: chapters with discussion topics anchored in the text, written new or converted from your own Markdown, checked against upubhub's limits and pushed as a private draft after your final sign-off.",
+  "changes": "First version: write a textbook or convert your own inputs/textbook.md, then push it to upubhub as a private draft after your final sign-off.",
+  "service": {"id": "upubhub", "label": "upubhub.com", "credential": null, "hosts": ["upubhub.com"]},
+  "app_min": "0.6.90",
+  "project_types": ["upubhub-textbook"],
+  "guides": ["upubhub-textbook-format.md", "textbook-design.md"],
+  "general_guides": ["readme-and-docs.md"],
+  "checks": [],
+  "connectors": ["upubhub-push"]
+}

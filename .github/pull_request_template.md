@@ -1,10 +1,14 @@
 ## What this changes
 
-<!-- One or two sentences: the template, and what it produces. -->
+<!-- One or two sentences: the template, what it produces and who it is for. -->
+
+## How I tested it
+
+<!-- Imported into my dashboard with Import a template; what the plans for my examples looked like. -->
 
 ## Checklist
 
-- [ ] One pack per pull request, and `pack_version` raised.
+- [ ] One pack per pull request, `pack_version` raised and `changes` says what is new in this version.
 - [ ] `author` in pack.json is my GitHub account.
 - [ ] Only tools listed in `platform/tools.json` are required. (A new tool is a separate pull request.)
 - [ ] No checks, sign-offs or "not an agent step" rules were removed or weakened.
