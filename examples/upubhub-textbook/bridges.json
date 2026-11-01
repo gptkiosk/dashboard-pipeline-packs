@@ -17,7 +17,8 @@
     "titles": [
       "verify textbook files",
       "fact.?check|accuracy",
-      "approve the textbook for upubhub"
+      "approve the textbook for upubhub",
+      "push the textbook to upubhub"
     ]
   }
 }

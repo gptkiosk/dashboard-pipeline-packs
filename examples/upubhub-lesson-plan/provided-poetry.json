@@ -17,7 +17,8 @@
     "titles": [
       "check the provided files",
       "verify lesson plan files",
-      "approve the lesson plan for upubhub"
+      "approve the lesson plan for upubhub",
+      "push the lesson plan to upubhub"
     ]
   }
 }

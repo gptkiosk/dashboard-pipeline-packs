@@ -17,7 +17,8 @@
     "titles": [
       "check the provided files",
       "verify textbook files",
-      "approve the textbook for upubhub"
+      "approve the textbook for upubhub",
+      "push the textbook to upubhub"
     ]
   }
 }

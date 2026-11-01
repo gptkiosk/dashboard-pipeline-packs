@@ -20,7 +20,8 @@
     "titles": [
       "check the provided files",
       "verify course package files",
-      "approve the course for upubhub"
+      "approve the course for upubhub",
+      "push the course to upubhub"
     ]
   }
 }
