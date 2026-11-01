@@ -1,0 +1,23 @@
+{
+  "type": "upubhub-textbook",
+  "title": "How bridges stand up",
+  "brief": "A three-chapter textbook for curious teenagers on how beam, arch and suspension bridges carry their loads, with discussion topics in every chapter.",
+  "answers": {
+    "content_source": "write",
+    "book_title": "How Bridges Stand Up",
+    "subject_scope": "Beam, arch and suspension bridges: loads, tension and compression, with famous examples. No engineering maths beyond simple ratios.",
+    "level": "8",
+    "chapters": "3",
+    "topics": "5",
+    "sources": "original writing"
+  },
+  "expect": {
+    "stories_min": 9,
+    "stories_max": 20,
+    "titles": [
+      "verify textbook files",
+      "fact.?check|accuracy",
+      "approve the textbook for upubhub"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "upubhub-lesson-plan",
+  "title": "My poetry lesson, ready for upubhub",
+  "brief": "I already wrote a lesson plan on reading a poem aloud; it is in inputs/lesson-plans/. Convert it without changing my wording and let me approve it before it goes to upubhub.",
+  "answers": {
+    "content_source": "provided",
+    "plan_title": "Reading a Poem Aloud",
+    "lesson_scope": "Rhythm and pauses when reading poetry aloud, for a grade 9 English class.",
+    "level": "9",
+    "minutes": "50",
+    "approach": "discussion",
+    "sources": "original writing"
+  },
+  "expect": {
+    "stories_min": 7,
+    "stories_max": 14,
+    "titles": [
+      "check the provided files",
+      "verify lesson plan files",
+      "approve the lesson plan for upubhub"
+    ]
+  }
+}

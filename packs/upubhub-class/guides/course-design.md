@@ -9,3 +9,4 @@
 - Assessment settings follow the objectives. Weight reasoning or application higher when the lesson is about explaining or using an idea.
 - State facts you are sure of. Mark anything uncertain for the fact-check story instead of guessing, and never cite a source you have not read.
 - Illustrations explain something the text cannot; decorative images cost money and add nothing to learning.
+- Provided text (content source provided) is the teacher's. Copy it into the package as written; report gaps, errors and limit problems to the teacher instead of fixing the wording.

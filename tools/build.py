@@ -8,8 +8,8 @@ The checks here are the structural rules the dashboard enforces at install (apps
 --dashboard <checkout>, every pack is also run through that dashboard's own validate(), which knows its project-type
 schema, shipped guides, checks and connectors.
 
-platform/tools.json lists what a template may require (agents, system tools, providers, checks, services). Every name a
-pack or template names must be listed there, and the tool's app_min must not be newer than the pack's. Adding a tool is
+platform/tools.json lists what a template may require (agents, system tools, providers, checks, services, connectors).
+Every name a pack or template names must be listed there, and the tool's app_min must not be newer than the pack's. Adding a tool is
 its own pull request.
 """
 from __future__ import annotations
@@ -34,7 +34,8 @@ GUIDE_RE = re.compile(r"^guides/[a-z0-9][a-z0-9-]{0,60}\.md$")
 MAX_FILE_BYTES = 40_000
 MAX_FILES = 40
 MAX_ARCHIVE_BYTES = 1_000_000
-REQUIRE_KINDS = ("agents", "system_tools", "providers", "checks", "services")
+REQUIRE_KINDS = ("agents", "system_tools", "providers", "checks", "services", "connectors")
+MAX_CHANGES = 600                       # the dashboard shows at most this much "what's new" text per version
 AUTHOR_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$")
 
 
@@ -58,6 +59,7 @@ def requirements(manifest: dict, files: dict[str, bytes]) -> dict[str, list[str]
     """Everything the pack and its templates say they need, merged by kind."""
     need = {k: [] for k in REQUIRE_KINDS}
     need["checks"] += manifest.get("checks") or []
+    need["connectors"] += manifest.get("connectors") or []
     if (manifest.get("service") or {}).get("id"):
         need["services"].append(manifest["service"]["id"])
     for t in manifest.get("project_types") or []:
@@ -170,6 +172,8 @@ def check(folder: Path, files: dict[str, bytes]) -> tuple[dict, list[str]]:
             problems.append(f"{key} must look like 1.2.3")
     if not str(m.get("label", "")).strip():
         problems.append("the pack needs a label")
+    if "changes" in m and not (isinstance(m["changes"], str) and 0 < len(m["changes"].strip()) <= MAX_CHANGES):
+        problems.append(f"changes is optional, but when present it must be text of 1 to {MAX_CHANGES} characters")
     types, guides = m.get("project_types") or [], m.get("guides") or []
     if not types:
         problems.append("the pack must provide at least one project type")
@@ -185,6 +189,21 @@ def check(folder: Path, files: dict[str, bytes]) -> tuple[dict, list[str]]:
         except (ValueError, UnicodeError, AttributeError):
             pass
     return m, problems
+
+
+def guide_conflicts(packs: dict[str, dict[str, bytes]]) -> dict[str, list[str]]:
+    """A dashboard finds a pack guide by name in the first installed pack that lists it, so two packs may share a guide name
+    only when the files are identical."""
+    owners: dict[str, tuple[str, bytes]] = {}
+    problems: dict[str, list[str]] = {}
+    for pack_id, files in sorted(packs.items()):
+        for rel, data in sorted(files.items()):
+            if not rel.startswith("guides/"):
+                continue
+            first = owners.setdefault(rel, (pack_id, data))
+            if first[0] != pack_id and first[1] != data:
+                problems.setdefault(pack_id, []).append(f"{rel} differs from the guide of the same name in pack {first[0]}; give it its own name")
+    return problems
 
 
 def dashboard_check(checkout: Path, files: dict[str, bytes]) -> list[str]:
@@ -227,8 +246,10 @@ def main() -> int:
     folders = sorted(p for p in args.packs.iterdir() if p.is_dir() and not p.name.startswith(".")) if args.packs.is_dir() else []
     platform = load_platform()
     failed, entries, archives = False, [], {}
+    clashes = guide_conflicts({folder.name: pack_files(folder)[0] for folder in folders})
     for folder in folders:
         files, problems = pack_files(folder)
+        problems += clashes.get(folder.name, [])
         manifest, more = check(folder, files)
         problems += more
         if manifest:
@@ -250,7 +271,8 @@ def main() -> int:
                         "summary": manifest.get("summary", ""), "service": manifest.get("service"),
                         "archive": name, "sha256": hashlib.sha256(data).hexdigest(), "app_min": manifest["app_min"],
                         "author": manifest["author"], "trust": "official" if manifest["author"] in platform["maintainers"] else "community",
-                        "requires": requirements(manifest, files), "settings": settings_labels(manifest, files)})
+                        "requires": requirements(manifest, files), "settings": settings_labels(manifest, files),
+                        **({"changes": manifest["changes"].strip()} if manifest.get("changes") else {})})
         print(f"{folder.name}: ok ({manifest['pack_version']}, {len(files)} files)")
     if failed:
         return 1

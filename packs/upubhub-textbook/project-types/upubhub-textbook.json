@@ -1,0 +1,73 @@
+{
+  "id": "upubhub-textbook",
+  "label": "upubhub textbook (chapters with discussion topics)",
+  "summary": "One textbook for upubhub.com: chapters with \"## \" sections and discussion (chat-out) topics anchored in the text, written new or converted from the author's own Markdown. After the author's final sign-off the dashboard can push it to upubhub as a private draft.",
+  "suggest": [
+    "upubhub",
+    "textbook",
+    "chapters?",
+    "chat.?outs?|discussion topics",
+    "study guide|course reader"
+  ],
+  "keys": ["agent", "fal", "openrouter"],
+  "guides": [
+    "upubhub-textbook-format.md",
+    "textbook-design.md"
+  ],
+  "planner_text": "Plan one textbook in the project folder, not software. Settings: content source {{content_source}}, level {{level}}, {{chapters}} chapters, at most {{topics}} discussion topics per chapter, sources: {{sources}}, illustrations: {{illustrations}}. Follow upubhub-textbook-format.md exactly.\nContent source write: agents write original chapter text. Content source provided: the author's own inputs/textbook.md is the text (a \"# \" heading per chapter when there is more than one chapter, a \"## \" heading per section). Agents copy that text: they never rewrite, shorten, extend or summarise it, and every problem in it goes back to the author.\nStories, in order: (1) human sign-off on the textbook brief: subject, scope, audience, reading level, chapter count and measurable objectives per chapter. (2) human sign-off on the source plan: for write, original writing or named open-licence sources (CC BY 4.0, CC BY-SA 4.0, CC0 or public domain) with author and https link; for provided, the author confirms they wrote or hold the rights to the file and lists any borrowed passage or image the same way. Never invent a licence or a credit. (3) provided only: a read-only agent story titled \"Check the provided files\": the chapter count is {{chapters}}, every chapter has sections, no section is empty, each chapter is within 60,000 characters, and images exist with alt text; it writes docs/project/provided-check.md, and each problem becomes a human fix story for the author, never an agent rewrite. (4) agent outline: write course/course.json with kind \"textbook\", chapters as lessons, section headings and objectives; for provided, chapter titles and section headings are copied from inputs/textbook.md. (5) agent chapter stories, one per chapter and parallel, each producing course/textbook/<chapter>.md with one \"## \" heading per section exactly as in course.json: written new for write; for provided, the chapter's text copied unchanged apart from heading levels and image paths. (6) agent discussion topics: course/topics.json, at most {{topics}} per chapter, anchors copied from the chapter text. (7) illustrations only when the illustrations setting is yes, using the media stages (inventory, generate in Media studio after spend approval, publish, integrate); images live in assets/img and are referenced with alt text. (8) a read-only fact-check story on a different model from the writer; for write its findings become fix stories, for provided they become a list for the author, who alone changes the text. (9) agent static verification titled \"Verify textbook files\" with verification_stage \"static\": re-read every file against the format guide and fix mismatches (for provided, only structure, never the author's wording). (10) agent UPLOAD.md: the step-by-step manual upload checklist, kept as the fallback. (11) human final sign-off titled \"Approve the textbook for upubhub\": the author reads every chapter and topic and approves the textbook; nothing leaves this computer before it. (12) human, after the final sign-off: send the textbook to upubhub with the dashboard's Push to upubhub button (a private draft with its discussion topics), or upload it by hand from UPLOAD.md; then review the draft and publish it in upubhub when ready. No containers, deployment, CI, pull requests or application code. No model holds the upubhub token or uploads anything.",
+  "failure_points": [
+    "A chapter heading that differs from course.json by one character breaks the textbook; copy the headings, do not retype them.",
+    "A topic anchor must occur exactly once in its section, on a plain prose line; upubhub rejects anchors inside links, images, code or markup.",
+    "A chapter longer than 60,000 characters cannot be assessed in a class later; split it into two chapters instead of trimming quality.",
+    "Provided text is the author's: a conversion that rewords, trims or \"improves\" it is wrong even when the result reads better. Copy, then report problems.",
+    "Text is declared ai_generated (written) or ai_assisted (provided and converted), never human-written.",
+    "The writer checking its own facts misses its own errors; the fact-check story uses a different model and reads the chapter text, not the outline."
+  ],
+  "visual_checks": "The author reads every chapter and topic before the final sign-off; illustrations are approved in Media studio before they are integrated.",
+  "human_signoffs": [
+    "Approve the textbook brief and objectives",
+    "Approve the source and licence plan",
+    "Approve media spending and select/publish illustrations in the project Media tab, when illustrations are requested",
+    "Read every chapter and discussion topic and approve the textbook for upubhub",
+    "Push the textbook to upubhub (or upload it by hand), then review and publish it in upubhub"
+  ],
+  "checks": [
+    {"id": "brief-signoff", "severity": "warn", "kind": "has_story", "match": "brief|objectives", "assignee": "human",
+     "message": "Start with a human sign-off on the textbook brief and measurable objectives."},
+    {"id": "source-plan", "severity": "block", "kind": "has_story", "match": "source|licen[cs]e", "assignee": "human",
+     "message": "Add a human sign-off on the source and licence plan; only the teacher can attest to reuse rights."},
+    {"id": "verification-story", "severity": "block", "kind": "has_story", "match": "verif.{0,30}(textbook|chapters?|files)",
+     "message": "Add the static verification story \"Verify textbook files\" that re-reads every file against the format guide."},
+    {"id": "fact-check", "severity": "warn", "kind": "has_story", "match": "fact.?check|accuracy|citations?",
+     "message": "Add a read-only fact-check story on a different model from the writer."},
+    {"id": "upload-is-human", "severity": "block", "kind": "not_agent_for", "match": "\\b(upload|publish|create the class|assign)\\b.{0,40}\\bupubhub\\b",
+     "message": "Uploading and publishing in upubhub are the teacher's steps."},
+    {"id": "final-signoff", "severity": "block", "kind": "has_story", "match": "approve.{0,30}\\bfor upubhub\\b|final sign.?off", "assignee": "human",
+     "message": "End with the teacher's final sign-off \"Approve the textbook for upubhub\"; nothing is pushed or uploaded before it."},
+    {"id": "verify-before-signoff", "severity": "warn", "kind": "order", "first": "verif.{0,30}(textbook|chapters?|files)", "then": "approve.{0,30}\\bfor upubhub\\b|final sign.?off",
+     "message": "The final sign-off comes after the textbook files are verified."},
+    {"id": "signoff-before-push", "severity": "block", "kind": "order", "first": "approve.{0,30}\\bfor upubhub\\b|final sign.?off", "then": "\\bpush",
+     "message": "The push to upubhub comes after the teacher's final sign-off."},
+    {"id": "push-is-human", "severity": "block", "kind": "not_agent_for", "match": "\\bpush(es|ed|ing)?\\b.{0,40}\\bupubhub\\b",
+     "message": "Pushing to upubhub is the teacher's step, run by the dashboard after the final sign-off; agents never hold the token."},
+    {"id": "provided-check", "severity": "warn", "kind": "requires_story", "match": "inputs/(textbook\\.md|lesson-plans)|provided files", "requires_match": "check the provided files",
+     "message": "Provided text needs the read-only story \"Check the provided files\" before anything is converted."},
+    {"id": "no-software-extras", "severity": "warn", "kind": "not_agent_for", "match": "docker|container|deploy|pull request|ci pipeline",
+     "message": "A textbook needs no containers, deployment, CI or pull requests."},
+    {"id": "outline-first", "severity": "warn", "kind": "order", "first": "outline|course\\.json", "then": "chapter [0-9]|write chapters?|convert chapters?|topics",
+     "message": "Chapters and topics are planned before the outline that fixes their headings."}
+  ],
+  "media_default_tiers": {"image": "draft"},
+  "customize": [
+    {"id": "content_source", "label": "Content source", "type": "choice", "options": ["write", "provided"], "default": "write", "prompt": "write: agents write new text. provided: you put your own inputs/textbook.md (one \"## \" heading per section, a \"# \" heading per chapter when there are several) in the project folder, and agents convert it without rewriting."},
+    {"id": "book_title", "label": "Textbook title", "type": "text", "max": 120, "required": true, "prompt": "The title readers will see, for example A Short History of Bridges."},
+    {"id": "subject_scope", "label": "Subject and scope", "type": "text", "max": 600, "required": true, "prompt": "What the textbook teaches and who it is for, and what is in and out of scope. Mention vocabulary to avoid or require."},
+    {"id": "level", "label": "Level", "type": "integer", "min": 0, "max": 16, "required": true, "prompt": "Reading level as a grade equivalent: 0 kindergarten, 1 to 12 grades, 13 to 16 college years. For a general adult audience, 9 or 10 reads easily."},
+    {"id": "chapters", "label": "Number of chapters", "type": "integer", "min": 1, "max": 20, "default": 3},
+    {"id": "topics", "label": "Discussion topics per chapter", "type": "integer", "min": 1, "max": 12, "default": 6},
+    {"id": "sources", "label": "Sources", "type": "choice", "options": ["original writing", "named open-licence sources"], "default": "original writing", "prompt": "Where text and images may come from. List each open-licence source (title, author, licence, https link) in the source sign-off."},
+    {"id": "illustrations", "label": "Illustrate the chapters", "type": "boolean", "default": false},
+    {"id": "illustration_style", "label": "Illustration style", "type": "text", "max": 300, "prompt": "Style and roughly how many images, if chapters are illustrated."}
+  ],
+  "requires": {"app_min": "0.6.90", "services": ["upubhub"]}
+}
