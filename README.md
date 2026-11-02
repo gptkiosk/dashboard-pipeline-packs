@@ -95,9 +95,9 @@ OPENROUTER_API_KEY=... python3 tools/rehearse.py --dashboard ../rcd-checkout --m
 
 ### GCP hosted app (containerized application on Google Cloud)
 
-`gcp-hosted-app` in pack `gcp-hosted-app` 1.0.0 · Official, by gptkiosk · dashboard 0.6.88 or newer
+`gcp-hosted-app` in pack `gcp-hosted-app` 1.0.1 · Official, by gptkiosk · dashboard 0.6.88 or newer
 
-A containerized application deployed to an explicitly named Google Cloud target such as Cloud Run, with runtime verification and delivery evidence.
+Build a working web application or API with its own workflows, data and tests, then prepare a container for an explicitly chosen Google Cloud target. Choose this for interactive software, not a content-only website. Cloud deployment follows your review and approval.
 
 Settings you choose: Main workflows, Platform and delivery, Data and integrations, Google Cloud hosting.
 
@@ -105,9 +105,9 @@ Needs: one of the agents claude, codex, grok, openclaw.
 
 ### GCP hosted website (illustrated site deployed to Google Cloud)
 
-`gcp-hosted-website` in pack `gcp-hosted-website` 1.0.0 · Official, by gptkiosk · dashboard 0.6.88 or newer
+`gcp-hosted-website` in pack `gcp-hosted-website` 1.0.1 · Official, by gptkiosk · dashboard 0.6.88 or newer
 
-An original illustrated website with themed pages and generated media, delivered through an explicitly planned Google Cloud deployment and dashboard-managed preview review.
+Create an illustrated, multi-page website and prepare it for your chosen Google Cloud hosting target. Includes page design, reviewed media and browser checks. Choose this when the site must be publicly hosted; domain, spending and deployment decisions remain yours.
 
 Settings you choose: Pages and interactions, Look and references, Media source, Artwork and media details, Google Cloud hosting.
 
@@ -115,9 +115,9 @@ Needs: one of the agents claude, codex, grok, openclaw; system tools node.
 
 ### Local website (illustrated site reviewed on this host)
 
-`local-website` in pack `local-website` 1.0.0 · Official, by gptkiosk · dashboard 0.6.88 or newer
+`local-website` in pack `local-website` 1.0.1 · Official, by gptkiosk · dashboard 0.6.88 or newer
 
-An original, illustrated static website with themed pages, generated media, and dashboard-managed local preview review. It is not cloud hosted by this project.
+Create an illustrated static website and review it in an isolated preview on this computer. Includes themed pages, reviewed media and browser checks. Choose this for a local demonstration or prototype; public hosting and deployment are outside this template.
 
 Settings you choose: Pages and interactions, Look and references, Media source, Artwork and media details.
 
@@ -125,9 +125,9 @@ Needs: one of the agents claude, codex, grok, openclaw; system tools docker, nod
 
 ### Other (does not exactly fit)
 
-`other` in pack `other` 1.0.0 · Official, by gptkiosk · dashboard 0.6.88 or newer
+`other` in pack `other` 1.0.1 · Official, by gptkiosk · dashboard 0.6.88 or newer
 
-A project that does not exactly fit a listed type. It is planned from the brief and the general practices, and the plan says which listed type it resembles and which of that type's gates still apply.
+Plan a deliverable that does not fit the listed templates. The project brief identifies the closest workflow, the differences, required checks and human decisions before work starts. Choose this for an unusual project; the normal safety and approval gates still apply.
 
 Settings you choose: Finished result, What is different?.
 
@@ -135,9 +135,9 @@ Needs: one of the agents claude, codex, grok, openclaw.
 
 ### Packaged app (local install from a public GitHub release)
 
-`packaged-app` in pack `packaged-app` 1.0.0 · Official, by gptkiosk · dashboard 0.6.88 or newer
+`packaged-app` in pack `packaged-app` 1.0.1 · Official, by gptkiosk · dashboard 0.6.88 or newer
 
-An application people install on their own machine from a signed package published as a GitHub release. Not cloud deployed. Examples: the Mac and Raspberry Pi control dashboards.
+Build an application people install on their own computers, with tests, documentation and a signed release package. Choose this for desktop or local tools rather than a hosted site. Public release and installation remain separate, explicitly reviewed steps.
 
 Settings you choose: Main workflows, Platform and delivery, Data and integrations.
 
@@ -145,9 +145,9 @@ Needs: one of the agents claude, codex, grok, openclaw.
 
 ### upubhub class (textbook, lesson plans, assessments)
 
-`upubhub-class` in pack `upubhub-class` 0.3.0 · Official, by gptkiosk · dashboard 0.6.90 or newer
+`upubhub-class` in pack `upubhub-class` 0.4.0 · Official, by gptkiosk · dashboard 0.6.90 or newer
 
-A short course a teacher teaches from on upubhub.com: a textbook with discussion topics, one lesson plan per lesson and class assessment settings. The text is written new or converted from the teacher's own files. After the teacher's final sign-off the dashboard can push it to upubhub as private drafts and an invite-only class.
+Create a complete teaching package: a source-credited textbook, linked lesson plans, chat-out discussions and text-grounded assessments for teacher review. Use new writing or your own files. After your sign-off, push private drafts and an invite-only class to upubhub; publishing stays your choice.
 
 Settings you choose: Content source, Subject code, Level, Class name, Subject and scope, Number of lessons, Sources, Illustrate the lessons, Illustration style, Assessment attempts, Grading strictness, Assessment emphasis.
 
@@ -155,9 +155,9 @@ Needs: dashboard checks course-package; services upubhub; connectors upubhub-pus
 
 ### upubhub lesson plan (one lesson)
 
-`upubhub-lesson-plan` in pack `upubhub-lesson-plan` 0.1.0 · Official, by gptkiosk · dashboard 0.6.90 or newer
+`upubhub-lesson-plan` in pack `upubhub-lesson-plan` 0.2.0 · Official, by gptkiosk · dashboard 0.6.90 or newer
 
-One lesson plan for upubhub.com: objectives, materials, timed activities, a check for understanding and notes for when students struggle, written new or converted from the teacher's own Markdown. After the teacher's final sign-off the dashboard can push it to upubhub as a private draft.
+Create one practical teaching plan with measurable objectives, textbook references, timed activities, discussion prompts and checks for understanding. Write it new or preserve your own plan. Review it, then push a private draft to upubhub after sign-off; class assignment is a separate choice.
 
 Settings you choose: Content source, Lesson title, Topic and scope, Level, Lesson length (minutes), Approach, Sources.
 
@@ -165,9 +165,9 @@ Needs: services upubhub; connectors upubhub-push.
 
 ### upubhub textbook (chapters with discussion topics)
 
-`upubhub-textbook` in pack `upubhub-textbook` 0.1.0 · Official, by gptkiosk · dashboard 0.6.90 or newer
+`upubhub-textbook` in pack `upubhub-textbook` 0.2.0 · Official, by gptkiosk · dashboard 0.6.90 or newer
 
-One textbook for upubhub.com: chapters with "## " sections and discussion (chat-out) topics anchored in the text, written new or converted from the author's own Markdown. After the author's final sign-off the dashboard can push it to upubhub as a private draft.
+Create one source-credited textbook, with structured chapters, learning objectives and editable chat-out topics anchored in the text. Write new material or convert your own manuscript without rewriting it. Review the evidence, then push a private draft to upubhub after sign-off.
 
 Settings you choose: Content source, Textbook title, Subject and scope, Level, Number of chapters, Discussion topics per chapter, Sources, Illustrate the chapters, Illustration style.
 

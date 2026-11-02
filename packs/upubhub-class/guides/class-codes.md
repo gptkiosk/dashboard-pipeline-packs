@@ -14,6 +14,7 @@ Subject codes:
 - ENGR: engineering and how machines work, for example jet engines
 - COMP: computer science and programming
 - SCI: general science
+- GEOL: geology and earth processes, for example GEOL:09-Why the Earth Moves
 - PHYS: physics
 - CHEM: chemistry
 - BIO: biology
