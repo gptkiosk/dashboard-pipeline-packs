@@ -2,10 +2,11 @@
   "format": "dashboard-pipeline-pack",
   "version": "0.1",
   "id": "gcp-hosted-app",
-  "pack_version": "1.0.0",
+  "pack_version": "1.0.1",
+  "changes": "Clearer store description: what this template produces, when to choose it and which delivery decisions remain yours.",
   "label": "GCP hosted app (containerized application on Google Cloud)",
   "author": "gptkiosk",
-  "summary": "A containerized application deployed to an explicitly named Google Cloud target such as Cloud Run, with runtime verification and delivery evidence.",
+  "summary": "Build a working web application or API with its own workflows, data and tests, then prepare a container for an explicitly chosen Google Cloud target. Choose this for interactive software, not a content-only website. Cloud deployment follows your review and approval.",
   "service": null,
   "app_min": "0.6.88",
   "project_types": [

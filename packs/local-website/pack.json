@@ -2,10 +2,11 @@
   "format": "dashboard-pipeline-pack",
   "version": "0.1",
   "id": "local-website",
-  "pack_version": "1.0.0",
+  "pack_version": "1.0.1",
+  "changes": "Clearer store description: what this template produces, when to choose it and which delivery decisions remain yours.",
   "label": "Local website (illustrated site reviewed on this host)",
   "author": "gptkiosk",
-  "summary": "An original, illustrated static website with themed pages, generated media, and dashboard-managed local preview review. It is not cloud hosted by this project.",
+  "summary": "Create an illustrated static website and review it in an isolated preview on this computer. Includes themed pages, reviewed media and browser checks. Choose this for a local demonstration or prototype; public hosting and deployment are outside this template.",
   "service": null,
   "app_min": "0.6.88",
   "project_types": [

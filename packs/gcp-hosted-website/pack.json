@@ -2,10 +2,11 @@
   "format": "dashboard-pipeline-pack",
   "version": "0.1",
   "id": "gcp-hosted-website",
-  "pack_version": "1.0.0",
+  "pack_version": "1.0.1",
+  "changes": "Clearer store description: what this template produces, when to choose it and which delivery decisions remain yours.",
   "label": "GCP hosted website (illustrated site deployed to Google Cloud)",
   "author": "gptkiosk",
-  "summary": "An original illustrated website with themed pages and generated media, delivered through an explicitly planned Google Cloud deployment and dashboard-managed preview review.",
+  "summary": "Create an illustrated, multi-page website and prepare it for your chosen Google Cloud hosting target. Includes page design, reviewed media and browser checks. Choose this when the site must be publicly hosted; domain, spending and deployment decisions remain yours.",
   "service": null,
   "app_min": "0.6.88",
   "project_types": [

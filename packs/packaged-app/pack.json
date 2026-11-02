@@ -2,10 +2,11 @@
   "format": "dashboard-pipeline-pack",
   "version": "0.1",
   "id": "packaged-app",
-  "pack_version": "1.0.0",
+  "pack_version": "1.0.1",
+  "changes": "Clearer store description: what this template produces, when to choose it and which delivery decisions remain yours.",
   "label": "Packaged app (local install from a public GitHub release)",
   "author": "gptkiosk",
-  "summary": "An application people install on their own machine from a signed package published as a GitHub release. Not cloud deployed. Examples: the Mac and Raspberry Pi control dashboards.",
+  "summary": "Build an application people install on their own computers, with tests, documentation and a signed release package. Choose this for desktop or local tools rather than a hosted site. Public release and installation remain separate, explicitly reviewed steps.",
   "service": null,
   "app_min": "0.6.88",
   "project_types": [
