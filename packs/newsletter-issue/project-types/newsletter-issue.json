@@ -19,20 +19,21 @@
     "issue-style-kit.md",
     "issue-art-sources.md"
   ],
-  "planner_text": "Plan one newsletter issue in the project folder, not software. Settings: audience {{readers}}, length {{length}}, voice {{voice}}, art source {{art_source}}, inline pictures {{inline_pictures}}, AI disclosure {{ai_disclosure}}. Follow newsletter-issue-format.md, issue-style-kit.md and issue-art-sources.md.\nStories, in order: (1) human sign-off on the issue brief: the topic, the point a reader should leave with, facts that must appear and anything to leave out. (2) agent style kit: write media/style-kit.md from the style and palette settings and any uploaded references, so every picture shares one look. (3) agent outline: issue/outline.md with title options, the preview line, section headings and one fact or example per section. (4) agent draft: issue/issue.md and issue/meta.json from the approved outline. (5) a read-only fact-check story on a different model from the writer; every claim about a project, number or date is checked against the project folder or a named source, and findings become fix stories. (6) agent art plan: when art_source is fal, a media_stage inventory story writes media/slots.json (placement, alt text, size, prompt = style kit plus one scene, estimate); when art_source is codex, an agent story writes media/prompts.md with one numbered prompt and file name per picture; always one 2:1 header and the requested number of inline pictures. (7) human art step: for fal, a human decision in the project Media tab that confirms the displayed spend, runs Generate all missing, then selects and publishes candidates; for codex, a human makes each image in Codex from media/prompts.md, saves it into media/incoming and approves it. Existing-art briefs skip generation. (8) agent integrate: copy approved pictures into issue/img, reference them from the issue with alt text and fill meta.json. (9) agent static verification titled Verify issue files: re-read the issue against the format guide and fix mismatches. (10) agent PASTE.md: a numbered checklist for pasting the title, subtitle, preview line and body into the upubhub issue editor and adding the header and pictures. (11) human, in upubhub: read the draft, post it and send or schedule it. No containers, deployment, CI, pull requests or application code. No agent posts, sends or publishes anything, and no agent holds a media key.",
+  "planner_text": "Plan one newsletter issue in the project folder, not software. Settings: audience {{readers}}, length {{length}}, voice {{voice}}, art source {{art_source}}, inline pictures {{inline_pictures}}, AI disclosure {{ai_disclosure}}. Follow newsletter-issue-format.md, issue-style-kit.md and issue-art-sources.md.\nStories, in order: (1) human sign-off on the issue brief: the topic, the point a reader should leave with, facts that must appear and anything to leave out. (2) agent style kit: write media/style-kit.md from the style and palette settings and any uploaded references, so every picture shares one look. (3) agent outline: issue/outline.md with title options, the preview line, section headings and one fact or example per section. (4) agent draft: issue/issue.md and issue/meta.json from the approved outline. (5) a read-only fact-check story on a different model from the writer; every claim about a project, number or date is checked against the project folder or a named source, and findings become fix stories. (6) agent art plan: when art_source is fal, a media_stage inventory story writes media/slots.json (placement, alt text, size, prompt = style kit plus one scene, estimate); when art_source is codex, an agent story writes media/prompts.md with one numbered prompt and file name per picture; always one 2:1 header and the requested number of inline pictures; every slot and prompt also carries a draft description for the picture. (7) human art step: for fal, a human decision in the project Media tab that confirms the displayed spend, runs Generate all missing, then selects and publishes candidates; for codex, a human makes each image in Codex from media/prompts.md, saves it into media/incoming and approves it. Existing-art briefs skip generation. (8) agent story titled Describe the pictures: look at each approved picture and write its description in meta.json, plain words on what it shows for readers who cannot see it, 200 characters or fewer, never empty and never just the file name; upubhub will not publish an issue until every picture has one. (9) agent integrate: copy approved pictures into issue/img and reference them from the issue with those descriptions. (10) agent static verification titled Verify issue files: re-read the issue against the format guide and confirm every picture has a description. (11) agent PASTE.md: a numbered checklist for pasting the title, subtitle, preview line and body into the upubhub issue editor and adding the header and pictures, entering each description in the Describe the picture field. (12) human, in upubhub: check each description reads true, post it and send or schedule it. No containers, deployment, CI, pull requests or application code. No agent posts, sends or publishes anything, and no agent holds a media key.",
   "failure_points": [
     "A preview line over 90 characters is cut in the inbox; count it.",
     "Pictures made from different prompts drift apart; every prompt is the same style kit plus one scene.",
     "The header is cut to 2:1; a subject near an edge is lost.",
     "The writer checking its own facts misses its own errors; the fact-check story uses a different model.",
     "Art declared as hand-made when AI made it breaks the reader's trust; ai_disclosure must match how it was made.",
-    "Placeholder art is not final art; do not mark the art story done until approved files exist."
+    "Placeholder art is not final art; do not mark the art story done until approved files exist.",
+    "upubhub will not publish an issue with a picture that has no description; write it from the approved image, not from the prompt, and say what it shows."
   ],
   "visual_checks": "The operator reads the draft and looks at every picture beside the others for one consistent look before posting.",
   "human_signoffs": [
     "Approve the issue brief",
     "Approve media spending and select/publish pictures in the project Media tab, or make and approve the Codex images",
-    "Read the finished issue, post it in upubhub and choose when to send it"
+    "Read the finished issue, check each picture description is true, post it in upubhub and choose when to send it"
   ],
   "checks": [
     {
@@ -56,6 +57,13 @@
       "kind": "has_story",
       "match": "fact.?check|accuracy",
       "message": "Add a read-only fact-check story on a different model from the writer."
+    },
+    {
+      "id": "describe-pictures",
+      "severity": "block",
+      "kind": "has_story",
+      "match": "describe.{0,20}pictures?",
+      "message": "Add a story that writes a description for every picture; upubhub needs it before an issue can be published."
     },
     {
       "id": "verification-story",
@@ -93,6 +101,14 @@
       "kind": "not_agent_for",
       "match": "docker|container|deploy|pull request|ci pipeline",
       "message": "An issue needs no containers, deployment, CI or pull requests."
+    },
+    {
+      "id": "describe-before-integrate",
+      "severity": "warn",
+      "kind": "order",
+      "first": "describe.{0,20}pictures?",
+      "then": "integrate",
+      "message": "Describe the pictures from the approved images before integrating them."
     }
   ],
   "media_default_tiers": {

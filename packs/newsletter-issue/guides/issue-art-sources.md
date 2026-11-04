@@ -7,3 +7,5 @@ Pick one source per issue from the settings.
 - Existing images only: a person places files in `media/incoming`; the agent checks size, alt text and fit with the style kit.
 
 Either way the agent then copies approved files into `issue/img` and references them from the issue. A drawn placeholder is never evidence that final art shipped.
+
+Descriptions: write one per picture from the approved image, after the art step, and keep it in meta.json. The slot or prompt carries only a draft.

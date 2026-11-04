@@ -19,7 +19,8 @@
     "titles": [
       "style kit",
       "fact.?check|accuracy",
-      "verify issue"
+      "verify issue",
+      "describe.{0,20}pictures?"
     ]
   }
 }
