@@ -123,6 +123,16 @@ Settings you choose: Pages and interactions, Look and references, Media source, 
 
 Needs: one of the agents claude, codex, grok, openclaw; system tools docker, node.
 
+### Newsletter issue (article with matching art)
+
+`newsletter-issue` in pack `newsletter-issue` 0.1.0 · Official, by gptkiosk · dashboard 0.6.90 or newer
+
+One newsletter issue written from your description, with a header and inline pictures that match your newsletter's style. Art comes from fal.ai in Media studio or from images you make in Codex. You review everything and post it to upubhub yourself.
+
+Settings you choose: Topic and key points, Readers, Voice, Length, Newsletter look and style, Accent colour, Art source, Inline pictures, Art made with AI.
+
+Needs: one of the agents claude, codex; services upubhub.
+
 ### Other (does not exactly fit)
 
 `other` in pack `other` 1.0.1 · Official, by gptkiosk · dashboard 0.6.88 or newer

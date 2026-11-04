@@ -1,0 +1,25 @@
+{
+  "type": "newsletter-issue",
+  "title": "Build Notes: what the history taught us",
+  "brief": "A newsletter issue on lessons from four software projects, with a 2:1 header and one inline picture.",
+  "answers": {
+    "topic": "Deployment lessons from four live projects and what AI-assisted development taught us; one honest story per project.",
+    "voice": "plain",
+    "length": "standard (500 to 900 words)",
+    "style": "Digital painting, soft brushwork, warm lamp light, a tired engineer in a workshop.",
+    "accent": "#2c7da0",
+    "art_source": "codex",
+    "inline_pictures": "1",
+    "ai_disclosure": "ai_assisted",
+    "readers": "builders and engineers"
+  },
+  "expect": {
+    "stories_min": 8,
+    "stories_max": 20,
+    "titles": [
+      "style kit",
+      "fact.?check|accuracy",
+      "verify issue"
+    ]
+  }
+}
