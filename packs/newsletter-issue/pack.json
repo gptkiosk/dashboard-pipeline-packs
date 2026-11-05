@@ -1,0 +1,16 @@
+{
+  "format": "dashboard-pipeline-pack",
+  "version": "0.1",
+  "id": "newsletter-issue",
+  "pack_version": "0.1.0",
+  "label": "Newsletter issue (article with matching art)",
+  "author": "gptkiosk",
+  "summary": "Writes one newsletter issue from a described topic, then makes header and inline art that matches your newsletter's look, feel and style, with fal.ai in Media studio or images you make in Codex. Ends with an issue file and a paste checklist for upubhub; posting stays your step.",
+  "service": {"id": "upubhub", "label": "upubhub.com", "credential": null, "hosts": ["upubhub.com"]},
+  "app_min": "0.6.90",
+  "project_types": ["newsletter-issue"],
+  "guides": ["newsletter-issue-format.md", "issue-style-kit.md", "issue-art-sources.md"],
+  "general_guides": [],
+  "checks": [],
+  "connectors": []
+}
